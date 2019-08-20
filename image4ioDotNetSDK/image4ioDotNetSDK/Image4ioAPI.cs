@@ -49,6 +49,35 @@ namespace image4ioDotNetSDK
         }
 
 
+        public GetResponseModel Get(GetRequestModel model) => GetAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+
+        public async Task<GetResponseModel> GetAsync(GetRequestModel model)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(model.Name))
+                {
+                    throw new MissingMemberException("'name' parameter is required");
+                }
+                string json = Newtonsoft.Json.JsonConvert.SerializeObject(model);
+                StringContent stringContent = new StringContent(json, System.Text.Encoding.Default, "application/json");
+
+                var result = await client.GetAsync("v0.1/get?name=" + (model.Name));
+                var jsonResponse = await result.Content.ReadAsStringAsync();
+                var response = Newtonsoft.Json.JsonConvert.DeserializeObject<GetResponseModel>(jsonResponse);
+                response.IsSuccessfull = result.IsSuccessStatusCode;
+
+                return response;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
+        }
+
+
+
         public CopyResponseModel Copy(CopyRequestModel model) => CopyAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
 
         public async Task<CopyResponseModel> CopyAsync(CopyRequestModel model)

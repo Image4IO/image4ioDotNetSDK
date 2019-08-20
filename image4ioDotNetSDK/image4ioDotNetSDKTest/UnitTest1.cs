@@ -47,12 +47,30 @@ namespace image4ioDotNetSDKTest
         }
 
         [Fact]
+        public void Get()
+        {
+            var model = new image4ioDotNetSDK.Models.GetRequestModel
+            {
+                Name = "/f8b193bf-327b-45fb-94df-e4a5cb64916c.png"
+            };
+
+            var response = api.Get(model);
+
+
+            Assert.True(response.IsSuccessfull);
+
+
+        }
+
+
+
+        [Fact]
         public void Copy()
         {
             var model = new image4ioDotNetSDK.Models.CopyRequestModel
             {
-                Source = "e64622a7-35d2-4f0d-a794-21916c623710.jpg",
-                Target_Path = "bitkilervehayvanlarbitkilervehayvanlar"
+                Source = "/b1b1eab6-6bf8-49e1-aaf9-c452ce452600.png",
+                Target_Path = "newnew"
             };
 
             var response = api.Copy(model);
