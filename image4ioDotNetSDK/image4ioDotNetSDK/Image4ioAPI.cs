@@ -78,6 +78,35 @@ namespace image4ioDotNetSDK
 
 
 
+        public CreateFolderResponseModel CreateFolder(CreateFolderRequestModel model) => CreateFolderAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+
+        public async Task<CreateFolderResponseModel> CreateFolderAsync(CreateFolderRequestModel model)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(model.Path))
+                {
+                    throw new MissingMemberException("'name' parameter is required");
+                }
+                string json = Newtonsoft.Json.JsonConvert.SerializeObject(model);
+                StringContent stringContent = new StringContent(json, System.Text.Encoding.Default, "application/json");
+
+                var result = await client.PostAsync("v0.1/CreateFolder?path=" + (model.Path),stringContent);
+                var jsonResponse = await result.Content.ReadAsStringAsync();
+                var response = Newtonsoft.Json.JsonConvert.DeserializeObject<CreateFolderResponseModel>(jsonResponse);
+                response.IsSuccessfull = result.IsSuccessStatusCode;
+
+                return response;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
+        }
+
+
+
         public CopyResponseModel Copy(CopyRequestModel model) => CopyAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
 
         public async Task<CopyResponseModel> CopyAsync(CopyRequestModel model)
@@ -184,6 +213,32 @@ namespace image4ioDotNetSDK
                 throw e;
             }
         }
+
+        public DeleteFolderResponseModel DeleteFolder(DeleteFolderRequestModel model) => DeleteFolderAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+
+        public async Task<DeleteFolderResponseModel> DeleteFolderAsync(DeleteFolderRequestModel model)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(model.Path))
+                {
+                    throw new MissingMemberException("you need to set 'file name'");
+                }
+
+                var result = await client.DeleteAsync("v0.1/deletefolder?path=" + (model.Path));
+                var jsonResponse = await result.Content.ReadAsStringAsync();
+                var response = Newtonsoft.Json.JsonConvert.DeserializeObject<DeleteFolderResponseModel>(jsonResponse);
+
+                response.IsSuccessfull = result.IsSuccessStatusCode;
+
+                return response;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
 
         public FetchResponseModel Fetch(FetchRequestModel model) => FetchAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
 

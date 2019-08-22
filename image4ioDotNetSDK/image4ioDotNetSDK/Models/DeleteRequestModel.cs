@@ -7,6 +7,7 @@ namespace image4ioDotNetSDK.Models
 {
    public  class DeleteRequestModel
     {
+        [JsonProperty("name")]
         public string name { get; set; }
     }
 }

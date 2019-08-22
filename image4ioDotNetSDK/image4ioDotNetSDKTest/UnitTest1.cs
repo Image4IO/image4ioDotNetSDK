@@ -16,9 +16,9 @@ namespace image4ioDotNetSDKTest
 
         public UnitTest1()
         {
-            string apiKey = File.ReadAllText("API.key");
-            string apiSecret = File.ReadAllText("API.secret");
-            api = new Image4ioAPI(apiKey, apiSecret);
+          //  string apiKey = File.ReadAllText("API.key");
+         //   string apiSecret = File.ReadAllText("API.secret");
+            api = new Image4ioAPI("CflQP+9CzjxNBCUgaQizAw==", "v4WQKFyOof4EuQWI9bG5RdgQk+bv7xt7s+7t0burdeo=");
         }
 
         [Fact]
@@ -51,7 +51,7 @@ namespace image4ioDotNetSDKTest
         {
             var model = new image4ioDotNetSDK.Models.GetRequestModel
             {
-                Name = "/f8b193bf-327b-45fb-94df-e4a5cb64916c.png"
+                Name = "/41856f35-e242-4031-aded-4b57f8c9ccb8.jpg"
             };
 
             var response = api.Get(model);
@@ -69,8 +69,8 @@ namespace image4ioDotNetSDKTest
         {
             var model = new image4ioDotNetSDK.Models.CopyRequestModel
             {
-                Source = "/b1b1eab6-6bf8-49e1-aaf9-c452ce452600.png",
-                Target_Path = "newnew"
+                Source = "/ed8fa250-8f61-4ba4-9dc8-9a8b6ca4f2a1.jpg",
+                Target_Path = "nisakjkkjk"
             };
 
             var response = api.Copy(model);
@@ -81,14 +81,31 @@ namespace image4ioDotNetSDKTest
 
         }
 
+        [Fact]
+        public void CreateFolder()
+        {
+            var model = new image4ioDotNetSDK.Models.CreateFolderRequestModel
+            {
+                Path = "itucreggghnnthek"
+               
+            };
+
+            var response = api.CreateFolder(model);
+
+            Assert.True(response.IsSuccessfull);
+
+        }
+
+
+
 
         [Fact]
         public void Move()
         {
             var model = new image4ioDotNetSDK.Models.MoveRequestModel
             {
-                Source = "bitkilervehayvanlar/19dd4d7d-cce6-4e43-aeed-1c25e058951c.jpg",
-                Target_Path = "bitkilervehayvanlarbitkilervehayvanlar"
+                Source = "/fa6e1cad-3998-44ce-b385-3495c096f7be.jpg",
+                Target_Path = "nisakjkkjk"
             };
 
             var response = api.Move(model);
@@ -117,7 +134,7 @@ namespace image4ioDotNetSDKTest
         {
             var model = new image4ioDotNetSDK.Models.ListFolderRequestModel
             {
-                Path = "bitkilervehayvanlar"
+                Path = "/"
             };
 
             var response = api.ListFolder(model);
@@ -134,7 +151,7 @@ namespace image4ioDotNetSDKTest
         {
             var model = new image4ioDotNetSDK.Models.DeleteRequestModel
             {
-                name = "bitkilervehayvanlarbitkilervehayvanlar/9d32ada2-1a5e-472b-9d0c-c3ab62dd006a.jpg"
+                name = "/ed8fa250-8f61-4ba4-9dc8-9a8b6ca4f2a1.jpg"
             };
 
             var response = api.Delete(model);
@@ -143,6 +160,25 @@ namespace image4ioDotNetSDKTest
 
 
         }
+
+
+
+
+        [Fact]
+        public void DeleteFolder()
+        {
+            var model = new image4ioDotNetSDK.Models.DeleteFolderRequestModel
+            {
+                Path = "nisakjkkjk"
+            };
+
+            var response = api.DeleteFolder(model);
+
+            Assert.True(response.IsSuccessfull);
+
+
+        }
+
 
 
 

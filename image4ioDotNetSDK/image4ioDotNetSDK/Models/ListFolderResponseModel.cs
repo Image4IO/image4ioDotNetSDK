@@ -7,6 +7,10 @@ namespace image4ioDotNetSDK.Models
 {
    public class ListFolderResponseModel : BaseResponseModel
     {
+
+
+        public List<Folder> folders { get; set; }
+        public List<File> files { get; set; }
         public class Folder
         {
             [JsonProperty("name")]
@@ -14,6 +18,8 @@ namespace image4ioDotNetSDK.Models
             [JsonProperty("parent")]
             public string Parent { get; set; }
         }
+
+
 
         public class File
         {
@@ -47,14 +53,7 @@ namespace image4ioDotNetSDK.Models
 
         }
 
-        public class RootObject
-        {
-            [JsonProperty("folders")]
-            public List<Folder> Folders { get; set; }
-
-            [JsonProperty("files")]
-            public List<File> Files { get; set; }
-        }
+  
 
     }
 }

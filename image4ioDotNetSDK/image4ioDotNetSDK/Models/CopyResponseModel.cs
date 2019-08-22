@@ -8,8 +8,14 @@ namespace image4ioDotNetSDK.Models
     public class CopyResponseModel : BaseResponseModel
     {
 
-        [JsonProperty("name")]
-        public string Name { get; set; }
+
+
+        public CopiedFile copiedfile { get; set; }
+        public class CopiedFile
+        {
+            public string name { get; set; }
+            public string status { get; set; }
+        }
 
 
     }

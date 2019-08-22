@@ -1,15 +1,18 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace image4ioDotNetSDK.Models
 {
-    public class FetchResponseModel : BaseResponseModel
+ public   class CreateFolderResponseModel : BaseResponseModel
     {
 
-        public FetchedFile fetchedfile { get; set; }
-        public class FetchedFile
+        public CreatedFolder createdFolder { get; set; }
+
+        public class CreatedFolder
         {
             public string name { get; set; }
             public string status { get; set; }
@@ -17,5 +20,3 @@ namespace image4ioDotNetSDK.Models
 
     }
 }
-
-
