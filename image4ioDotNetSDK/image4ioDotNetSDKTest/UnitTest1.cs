@@ -1,49 +1,65 @@
-using System;
 using System.IO;
 using Xunit;
 using image4ioDotNetSDK;
+using System;
 
 namespace image4ioDotNetSDKTest
 {
-    public class UnitTest1
+    public class TestsFixture : IDisposable
     {
-        readonly Image4ioAPI api;
-        string Name;
+        public Image4ioAPI Api { get; set; }
 
-        string original_name;
-
-
-
-        public UnitTest1()
+        public TestsFixture()
         {
-          //  string apiKey = File.ReadAllText("API.key");
-         //   string apiSecret = File.ReadAllText("API.secret");
-            api = new Image4ioAPI("CflQP+9CzjxNBCUgaQizAw==", "v4WQKFyOof4EuQWI9bG5RdgQk+bv7xt7s+7t0burdeo=");
+            string apiKey = File.ReadAllText("APIKey.key");
+            string apiSecret = File.ReadAllText("APISecret.key");
+            Api = new Image4ioAPI(apiKey, apiSecret);
+        }
+
+        public void Dispose()
+        {
+
+        }
+    }
+
+    public class UnitTests : IClassFixture<TestsFixture>
+    {
+        readonly TestsFixture fixture;
+
+        public UnitTests(TestsFixture _fixture)
+        {
+            this.fixture = _fixture;
         }
 
         [Fact]
         public void Upload()
         {
-
-            FileStream stream = File.Open(@"Assets\a.png", FileMode.Open);
-
             var model = new image4ioDotNetSDK.Models.UploadRequestModel()
             {
-                Path = "bitkilervehayvanlarbitkilervehayvanlar"
-
+                Path = "bitkilervehayvanlarbitkilervehayvanlar",
+                Overwrite=true,
+                UseFilename=true
             };
-            model.Files.Add(stream);
+
+            FileStream stream = File.Open(@"Assets\a.png", FileMode.Open);
+            model.Files.Add(new image4ioDotNetSDK.Models.UploadRequestModel.File
+            {
+                Data = stream,
+                FileName = "a.png",
+                Name = "a.png"
+            });
+
             stream = File.Open(@"Assets\b.png", FileMode.Open);
-            model.Files.Add(stream);
+            model.Files.Add(new image4ioDotNetSDK.Models.UploadRequestModel.File
+            {
+                Data = stream,
+                FileName = "b.png",
+                Name = "b.png"
+            });
 
-
-
-            var response = api.Upload(model);
-
+            var response = fixture.Api.Upload(model);
 
             Assert.True(response.IsSuccessfull);
-
-
         }
 
         [Fact]
@@ -54,15 +70,10 @@ namespace image4ioDotNetSDKTest
                 Name = "/41856f35-e242-4031-aded-4b57f8c9ccb8.jpg"
             };
 
-            var response = api.Get(model);
-
+            var response = fixture.Api.Get(model);
 
             Assert.True(response.IsSuccessfull);
-
-
         }
-
-
 
         [Fact]
         public void Copy()
@@ -73,12 +84,9 @@ namespace image4ioDotNetSDKTest
                 Target_Path = "nisakjkkjk"
             };
 
-            var response = api.Copy(model);
-
+            var response = fixture.Api.Copy(model);
 
             Assert.True(response.IsSuccessfull);
-
-
         }
 
         [Fact]
@@ -87,17 +95,13 @@ namespace image4ioDotNetSDKTest
             var model = new image4ioDotNetSDK.Models.CreateFolderRequestModel
             {
                 Path = "itucreggghnnthek"
-               
+
             };
 
-            var response = api.CreateFolder(model);
+            var response = fixture.Api.CreateFolder(model);
 
             Assert.True(response.IsSuccessfull);
-
         }
-
-
-
 
         [Fact]
         public void Move()
@@ -108,10 +112,9 @@ namespace image4ioDotNetSDKTest
                 Target_Path = "nisakjkkjk"
             };
 
-            var response = api.Move(model);
+            var response = fixture.Api.Move(model);
 
             Assert.True(response.IsSuccessfull);
-
         }
 
 
@@ -121,13 +124,14 @@ namespace image4ioDotNetSDKTest
             var model = new image4ioDotNetSDK.Models.FetchRequestModel
             {
                 From = "https://images.pexels.com/photos/853168/pexels-photo-853168.jpeg",
-               // Target_path = ""
+                // Target_path = ""
 
             };
-            var response = api.Fetch(model);
+
+            var response = fixture.Api.Fetch(model);
+
             Assert.True(response.IsSuccessfull);
         }
-
 
         [Fact]
         public void ListFolder()
@@ -137,14 +141,10 @@ namespace image4ioDotNetSDKTest
                 Path = "/"
             };
 
-            var response = api.ListFolder(model);
-
+            var response = fixture.Api.ListFolder(model);
 
             Assert.True(response.IsSuccessfull);
-
         }
-
-
 
         [Fact]
         public void Delete()
@@ -154,15 +154,10 @@ namespace image4ioDotNetSDKTest
                 name = "/ed8fa250-8f61-4ba4-9dc8-9a8b6ca4f2a1.jpg"
             };
 
-            var response = api.Delete(model);
+            var response = fixture.Api.Delete(model);
 
             Assert.True(response.IsSuccessfull);
-
-
         }
-
-
-
 
         [Fact]
         public void DeleteFolder()
@@ -172,15 +167,9 @@ namespace image4ioDotNetSDKTest
                 Path = "nisakjkkjk"
             };
 
-            var response = api.DeleteFolder(model);
+            var response = fixture.Api.DeleteFolder(model);
 
             Assert.True(response.IsSuccessfull);
-
-
         }
-
-
-
-
     }
 }

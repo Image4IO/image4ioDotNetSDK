@@ -1,6 +1,5 @@
 ﻿using image4ioDotNetSDK.Models;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,23 +16,23 @@ namespace image4ioDotNetSDK
 
             var byteArray = Encoding.ASCII.GetBytes(APIKey + ":" + APISecret);
             client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
-
         }
 
 
+        public UploadResponseModel Upload(UploadRequestModel model) => UploadAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
 
-       public UploadResponseModel Upload(UploadRequestModel model) => UploadAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
-
-        public async Task<UploadResponseModel>UploadAsync(UploadRequestModel model)
+        public async Task<UploadResponseModel> UploadAsync(UploadRequestModel model)
         {
-            
             try
             {
                 MultipartFormDataContent form = new MultipartFormDataContent();
                 foreach (var i in model.Files)
                 {
-                    form.Add(new StreamContent(i));
+                    form.Add(new StreamContent(i.Data), i.Name, i.FileName);
                 }
+
+                form.Add(new StringContent(model.UseFilename.ToString()), "use_filename");
+                form.Add(new StringContent(model.Overwrite.ToString()), "overwrite");
 
                 var result = await client.PostAsync("v0.1/upload?path=" + (model.Path), form);
                 var jsonResponse = await result.Content.ReadAsStringAsync();
@@ -42,7 +41,7 @@ namespace image4ioDotNetSDK
 
                 return response;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw e;
             }
@@ -73,9 +72,7 @@ namespace image4ioDotNetSDK
             {
                 throw e;
             }
-
         }
-
 
 
         public CreateFolderResponseModel CreateFolder(CreateFolderRequestModel model) => CreateFolderAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
@@ -91,7 +88,7 @@ namespace image4ioDotNetSDK
                 string json = Newtonsoft.Json.JsonConvert.SerializeObject(model);
                 StringContent stringContent = new StringContent(json, System.Text.Encoding.Default, "application/json");
 
-                var result = await client.PostAsync("v0.1/CreateFolder?path=" + (model.Path),stringContent);
+                var result = await client.PostAsync("v0.1/CreateFolder?path=" + (model.Path), stringContent);
                 var jsonResponse = await result.Content.ReadAsStringAsync();
                 var response = Newtonsoft.Json.JsonConvert.DeserializeObject<CreateFolderResponseModel>(jsonResponse);
                 response.IsSuccessfull = result.IsSuccessStatusCode;
@@ -121,14 +118,14 @@ namespace image4ioDotNetSDK
                 StringContent stringContent = new StringContent(json, System.Text.Encoding.Default, "application/json");
 
 
-                var result = await client.PutAsync("v0.1/copy?source=" + (model.Source)+ "&target_path="+(model.Target_Path), stringContent);
+                var result = await client.PutAsync("v0.1/copy?source=" + (model.Source) + "&target_path=" + (model.Target_Path), stringContent);
                 var jsonResponse = await result.Content.ReadAsStringAsync();
                 var response = Newtonsoft.Json.JsonConvert.DeserializeObject<CopyResponseModel>(jsonResponse);
                 response.IsSuccessfull = result.IsSuccessStatusCode;
-               
+
                 return response;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw e;
             }
@@ -142,7 +139,7 @@ namespace image4ioDotNetSDK
             {
                 if (string.IsNullOrEmpty(model.Source))
                 {
-                    
+
                 }
                 string json = Newtonsoft.Json.JsonConvert.SerializeObject(model);
                 StringContent stringContent = new StringContent(json, System.Text.Encoding.Default, "application/json");
@@ -156,30 +153,30 @@ namespace image4ioDotNetSDK
 
                 return response;
 
-                
+
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw e;
             }
 
         }
 
-        public ListFolderResponseModel ListFolder(ListFolderRequestModel model) =>ListFolderAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+        public ListFolderResponseModel ListFolder(ListFolderRequestModel model) => ListFolderAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
 
         public async Task<ListFolderResponseModel> ListFolderAsync(ListFolderRequestModel model)
         {
             try
             {
-                var result = await client.GetAsync("v0.1/listfolder?path="+(model.Path));
+                var result = await client.GetAsync("v0.1/listfolder?path=" + (model.Path));
                 var jsonResponse = await result.Content.ReadAsStringAsync();
                 var response = Newtonsoft.Json.JsonConvert.DeserializeObject<ListFolderResponseModel>(jsonResponse);
 
                 response.IsSuccessfull = result.IsSuccessStatusCode;
-        
 
 
-                
+
+
 
                 return response;
             }
@@ -203,9 +200,9 @@ namespace image4ioDotNetSDK
                 var result = await client.DeleteAsync("v0.1/deletefile?name=" + (model.name));
                 var jsonResponse = await result.Content.ReadAsStringAsync();
                 var response = Newtonsoft.Json.JsonConvert.DeserializeObject<DeleteResponseModel>(jsonResponse);
-                
+
                 response.IsSuccessfull = result.IsSuccessStatusCode;
-                
+
                 return response;
             }
             catch (Exception e)
@@ -261,19 +258,11 @@ namespace image4ioDotNetSDK
                 response.IsSuccessfull = result.IsSuccessStatusCode;
 
                 return response;
-
-
             }
             catch (Exception e)
             {
                 throw e;
             }
-
-
-
         }
-
-
-
     }
 }

@@ -16,6 +16,12 @@
     <None Update="API.key">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="APIKey.key">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="APISecret.key">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Assets\a.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

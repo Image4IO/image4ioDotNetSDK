@@ -1,27 +1,29 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Net.Http;
-using System.Text;
 
 namespace image4ioDotNetSDK.Models
 {
-   public class UploadRequestModel
+    public class UploadRequestModel
     {
         public UploadRequestModel()
         {
-            Files = new List<Stream>();
-
+            Files = new List<File>();
         }
+        
+        public bool UseFilename { get; set; }
 
-        [JsonProperty("path", NullValueHandling = NullValueHandling.Ignore)]
+        public bool Overwrite { get; set; }
+
         public string Path { get; set; }
 
+        public List<File> Files { get; set; }
 
-        [JsonProperty("files")]
-        public List<Stream>  Files { get; set; }
+        public class File
+        {
+            public Stream Data { get; set; }
+            public string Name { get; set; }
+            public string FileName { get; set; }
+        }
 
-      
     }
 }
