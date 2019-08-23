@@ -1,0 +1,11 @@
+<Playlist Version="1.0">
+<Add Test="image4ioDotNetSDKTest.UnitTests.CreateFolder" />
+<Add Test="image4ioDotNetSDKTest.UnitTests.Upload" />
+<Add Test="image4ioDotNetSDKTest.UnitTests.Get" />
+<Add Test="image4ioDotNetSDKTest.UnitTests.Move" />
+<Add Test="image4ioDotNetSDKTest.UnitTests.Copy" />
+<Add Test="image4ioDotNetSDKTest.UnitTests.Fetch" />
+<Add Test="image4ioDotNetSDKTest.UnitTests.Delete" />
+<Add Test="image4ioDotNetSDKTest.UnitTests.DeleteFolder" />
+<Add Test="image4ioDotNetSDKTest.UnitTests.ListFolder" />
+</Playlist>

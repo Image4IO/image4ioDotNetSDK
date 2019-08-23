@@ -32,13 +32,31 @@ namespace image4ioDotNetSDKTest
         }
 
         [Fact]
+        public void OrderedTest()
+        {
+            CreateFolder();
+            Upload();
+            Get();
+            Copy();
+            Move();
+            Fetch();
+            Delete();
+            ListFolder();
+            DeleteFolder();
+        }
+
+        public string uploadedFileName;
+        public string movedFileName;
+
+
+        [Fact]
         public void Upload()
         {
             var model = new image4ioDotNetSDK.Models.UploadRequestModel()
             {
-                Path = "bitkilervehayvanlarbitkilervehayvanlar",
+                Path = "playlistfolder",
                 Overwrite=true,
-                UseFilename=true
+                UseFilename=false
             };
 
             FileStream stream = File.Open(@"Assets\a.png", FileMode.Open);
@@ -48,7 +66,7 @@ namespace image4ioDotNetSDKTest
                 FileName = "a.png",
                 Name = "a.png"
             });
-
+            
             stream = File.Open(@"Assets\b.png", FileMode.Open);
             model.Files.Add(new image4ioDotNetSDK.Models.UploadRequestModel.File
             {
@@ -56,8 +74,8 @@ namespace image4ioDotNetSDKTest
                 FileName = "b.png",
                 Name = "b.png"
             });
-
             var response = fixture.Api.Upload(model);
+              uploadedFileName = response.uploadedFiles[0].name;
 
             Assert.True(response.IsSuccessfull);
         }
@@ -67,7 +85,7 @@ namespace image4ioDotNetSDKTest
         {
             var model = new image4ioDotNetSDK.Models.GetRequestModel
             {
-                Name = "/41856f35-e242-4031-aded-4b57f8c9ccb8.jpg"
+                Name = uploadedFileName
             };
 
             var response = fixture.Api.Get(model);
@@ -80,8 +98,8 @@ namespace image4ioDotNetSDKTest
         {
             var model = new image4ioDotNetSDK.Models.CopyRequestModel
             {
-                Source = "/ed8fa250-8f61-4ba4-9dc8-9a8b6ca4f2a1.jpg",
-                Target_Path = "nisakjkkjk"
+                Source = uploadedFileName,
+                Target_Path = "playlistfolder"
             };
 
             var response = fixture.Api.Copy(model);
@@ -94,7 +112,7 @@ namespace image4ioDotNetSDKTest
         {
             var model = new image4ioDotNetSDK.Models.CreateFolderRequestModel
             {
-                Path = "itucreggghnnthek"
+                Path = "playlistfolder"
 
             };
 
@@ -108,15 +126,15 @@ namespace image4ioDotNetSDKTest
         {
             var model = new image4ioDotNetSDK.Models.MoveRequestModel
             {
-                Source = "/fa6e1cad-3998-44ce-b385-3495c096f7be.jpg",
-                Target_Path = "nisakjkkjk"
+                Source = uploadedFileName,
+                Target_Path = "playlistfolder"
             };
 
             var response = fixture.Api.Move(model);
+            movedFileName = response.movedfile.name;
 
             Assert.True(response.IsSuccessfull);
         }
-
 
         [Fact]
         public void Fetch()
@@ -124,7 +142,7 @@ namespace image4ioDotNetSDKTest
             var model = new image4ioDotNetSDK.Models.FetchRequestModel
             {
                 From = "https://images.pexels.com/photos/853168/pexels-photo-853168.jpeg",
-                // Target_path = ""
+                 Target_path = "playlistfolder"
 
             };
 
@@ -138,7 +156,7 @@ namespace image4ioDotNetSDKTest
         {
             var model = new image4ioDotNetSDK.Models.ListFolderRequestModel
             {
-                Path = "/"
+                Path = "playlistfolder"
             };
 
             var response = fixture.Api.ListFolder(model);
@@ -151,7 +169,7 @@ namespace image4ioDotNetSDKTest
         {
             var model = new image4ioDotNetSDK.Models.DeleteRequestModel
             {
-                name = "/ed8fa250-8f61-4ba4-9dc8-9a8b6ca4f2a1.jpg"
+                name = movedFileName
             };
 
             var response = fixture.Api.Delete(model);
@@ -164,7 +182,7 @@ namespace image4ioDotNetSDKTest
         {
             var model = new image4ioDotNetSDK.Models.DeleteFolderRequestModel
             {
-                Path = "nisakjkkjk"
+                Path = "playlistfolder"
             };
 
             var response = fixture.Api.DeleteFolder(model);

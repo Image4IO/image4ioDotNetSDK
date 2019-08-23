@@ -9,7 +9,7 @@ namespace image4ioDotNetSDK
     public class Image4ioAPI
     {
         private static readonly HttpClient client = new HttpClient();
-
+        
         public Image4ioAPI(string APIKey, string APISecret)
         {
             client.BaseAddress = new Uri("https://api.image4.io");
@@ -37,9 +37,13 @@ namespace image4ioDotNetSDK
                 var result = await client.PostAsync("v0.1/upload?path=" + (model.Path), form);
                 var jsonResponse = await result.Content.ReadAsStringAsync();
                 var response = Newtonsoft.Json.JsonConvert.DeserializeObject<UploadResponseModel>(jsonResponse);
+                
                 response.IsSuccessfull = result.IsSuccessStatusCode;
 
                 return response;
+                
+                
+                
             }
             catch (Exception e)
             {
