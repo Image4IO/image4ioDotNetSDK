@@ -3,7 +3,18 @@ image4io is a cloud service where your images are uploaded, moved, copied, feche
 
 <h2>Configuration</h2>
 <p>
- API key and APIsecret must be defined in order to send requests to API.
+ API key and APIsecret must be defined in new created files order to send requests to API.
+ 
+ ```
+  public TestsFixture()
+        {
+            string apiKey = File.ReadAllText("APIKey.key");
+            string apiSecret = File.ReadAllText("APISecret.key");
+            Api = new Image4ioAPI(apisecret,apikey);
+        }
+            
+```
+ 
 </p>
 
 <h2>Usage</h2>
