@@ -9,7 +9,7 @@ namespace image4ioDotNetSDK
     public class Image4ioAPI
     {
         private static readonly HttpClient client = new HttpClient();
-        string asg;
+
         public Image4ioAPI(string APIKey, string APISecret)
         {
             client.BaseAddress = new Uri("https://api.image4.io");
