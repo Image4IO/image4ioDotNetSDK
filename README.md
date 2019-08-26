@@ -1,3 +1,7 @@
+[![Nuget](https://img.shields.io/nuget/v/image4io.DotNet.svg)](https://www.nuget.org/packages/image4io.DotNet)
+![GitHub](https://img.shields.io/github/license/Image4IO/image4ioDotNetSDK.svg)
+![GitHub top language](https://img.shields.io/github/languages/top/Image4IO/image4ioDotNetSDK.svg)
+
 # image4ioDotNetSDK
 
 image4io is a cloud service where your images are uploaded, moved, copied, feched, deleted.

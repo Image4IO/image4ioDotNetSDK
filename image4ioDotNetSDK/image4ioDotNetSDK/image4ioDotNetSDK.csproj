@@ -5,7 +5,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageIconUrl>https://s.gravatar.com/avatar/0951b3b16c3110685ea364f8cab46113</PackageIconUrl>
     <RepositoryUrl>https://github.com/Image4IO/image4ioDotNetSDK</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/Image4IO/image4ioDotNetSDK</PackageProjectUrl>
+    <PackageProjectUrl>https://image4.io</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Company>image4io</Company>
     <Authors>image4io</Authors>
