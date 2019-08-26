@@ -46,7 +46,7 @@ The following example deletes a file from your cloud.
 
 ### Running Unit Tests
 
-* Clone the repository to your local `:> git clone https://github.com/Image4IO/image4ioDotNetSDK.git`
+* Clone the repository to your local `git clone https://github.com/Image4IO/image4ioDotNetSDK.git`
 * Open image4ioDotNetSDK.sln > image4ioDotNetSDKTest
 * UnitTest1 > Run Tests
 
