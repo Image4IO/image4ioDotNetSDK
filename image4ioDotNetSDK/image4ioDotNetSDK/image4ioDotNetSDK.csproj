@@ -2,6 +2,18 @@
 
   <PropertyGroup>
     <TargetFrameworks>net472;netcoreapp2.0;netcoreapp2.1;netcoreapp2.2</TargetFrameworks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageIconUrl>https://s.gravatar.com/avatar/0951b3b16c3110685ea364f8cab46113</PackageIconUrl>
+    <RepositoryUrl>https://github.com/Image4IO/image4ioDotNetSDK</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/Image4IO/image4ioDotNetSDK</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Company>image4io</Company>
+    <Authors>image4io</Authors>
+    <Version>0.1.0</Version>
+    <RepositoryType>git</RepositoryType>
+    <PackageId>image4io.DotNet</PackageId>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Copyright>image4io</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
