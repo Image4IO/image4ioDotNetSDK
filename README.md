@@ -59,5 +59,7 @@ Image4io team is always ready to support you.
 ## Follow Us
 
 Blog: [image4.io/en/blog/](https://image4.io/en/blog/)
+
 Twitter: [twitter.com/image4io](https://twitter.com/image4io)
+
 LinkedIn : [linkedin.com/company/image4io/](https://www.linkedin.com/company/image4io/)
