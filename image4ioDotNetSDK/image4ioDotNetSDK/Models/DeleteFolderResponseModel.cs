@@ -14,6 +14,7 @@ namespace image4ioDotNetSDK.Models
 
         public class DeletedFolder
         {
+
             public string name { get; set; }
             public string status { get; set; }
         }

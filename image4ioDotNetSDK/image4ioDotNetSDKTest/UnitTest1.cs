@@ -131,7 +131,7 @@ namespace image4ioDotNetSDKTest
             };
 
             var response = fixture.Api.Move(model);
-            movedFileName = response.movedfile.name;
+            movedFileName = response.movedfile.Name;
 
             Assert.True(response.IsSuccessfull);
         }
