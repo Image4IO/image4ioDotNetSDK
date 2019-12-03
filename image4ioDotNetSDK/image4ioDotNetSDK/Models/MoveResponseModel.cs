@@ -10,9 +10,13 @@ namespace image4ioDotNetSDK.Models
 
         public MovedFile movedfile { get; set; }
         public class MovedFile
+
         {
-            public string name { get; set; }
-            public string status { get; set; }
+            [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+            public string Name { get; set; }
+
+            [JsonProperty("status", NullValueHandling = NullValueHandling.Ignore)]
+            public string Status { get; set; }
 
         }
     }

@@ -63,7 +63,6 @@ namespace image4ioDotNetSDK
                     throw new MissingMemberException("'name' parameter is required");
                 }
                 string json = Newtonsoft.Json.JsonConvert.SerializeObject(model);
-                StringContent stringContent = new StringContent(json, System.Text.Encoding.Default, "application/json");
 
                 var result = await client.GetAsync("v0.1/get?name=" + (model.Name));
                 var jsonResponse = await result.Content.ReadAsStringAsync();

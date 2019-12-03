@@ -14,8 +14,11 @@ namespace image4ioDotNetSDK.Models
 
         public class CreatedFolder
         {
-            public string name { get; set; }
-            public string status { get; set; }
+            [JsonProperty("name")]
+            public string Name { get; set; }
+
+            [JsonProperty("status")]
+            public string Status { get; set; }
         }
 
     }

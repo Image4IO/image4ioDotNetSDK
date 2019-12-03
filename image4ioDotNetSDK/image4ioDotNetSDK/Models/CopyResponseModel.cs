@@ -7,9 +7,6 @@ namespace image4ioDotNetSDK.Models
 {
     public class CopyResponseModel : BaseResponseModel
     {
-
-
-
         public CopiedFile copiedfile { get; set; }
         public class CopiedFile
         {

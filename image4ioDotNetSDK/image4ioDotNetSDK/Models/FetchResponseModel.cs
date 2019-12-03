@@ -11,8 +11,11 @@ namespace image4ioDotNetSDK.Models
         public FetchedFile fetchedfile { get; set; }
         public class FetchedFile
         {
-            public string name { get; set; }
-            public string status { get; set; }
+            [JsonProperty("name")]
+            public string Name { get; set; }
+
+            [JsonProperty("status")]
+            public string Status { get; set; }
         }
 
     }
