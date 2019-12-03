@@ -254,7 +254,7 @@ namespace image4ioDotNetSDK
                 string json = Newtonsoft.Json.JsonConvert.SerializeObject(model);
                 StringContent stringContent = new StringContent(json, System.Text.Encoding.Default, "application/json");
 
-                var result = await client.PostAsync("v0.1/fetch?from=" + (model.From) + "&" + (model.Target_path), stringContent);
+                var result = await client.PostAsync("v0.1/fetch?from=" + (model.From) + "&target_path" + (model.Target_path), stringContent);
 
                 var jsonResponse = await result.Content.ReadAsStringAsync();
                 var response = Newtonsoft.Json.JsonConvert.DeserializeObject<FetchResponseModel>(jsonResponse);
