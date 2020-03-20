@@ -63,16 +63,14 @@ namespace image4ioDotNetSDKTest
             model.Files.Add(new image4ioDotNetSDK.Models.UploadRequestModel.File
             {
                 Data = stream,
-                FileName = "a.png",
-                Name = "a.png"
+                FileName = "a.png"
             });
             
             stream = File.Open(@"Assets\b.png", FileMode.Open);
             model.Files.Add(new image4ioDotNetSDK.Models.UploadRequestModel.File
             {
                 Data = stream,
-                FileName = "b.png",
-                Name = "b.png"
+                FileName = "b.png"
             });
             var response = fixture.Api.Upload(model);
               uploadedFileName = response.uploadedFiles[0].name;

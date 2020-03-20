@@ -12,10 +12,13 @@ namespace image4ioDotNetSDK
 
         public Image4ioAPI(string APIKey, string APISecret)
         {
-            client.BaseAddress = new Uri("https://api.image4.io");
+            if (client == null || client.BaseAddress == null)
+            {
+                client.BaseAddress = new Uri("https://api.image4.io");
 
-            var byteArray = Encoding.ASCII.GetBytes(APIKey + ":" + APISecret);
-            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+                var byteArray = Encoding.ASCII.GetBytes(APIKey + ":" + APISecret);
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+            }
         }
 
 
@@ -28,7 +31,7 @@ namespace image4ioDotNetSDK
                 MultipartFormDataContent form = new MultipartFormDataContent();
                 foreach (var i in model.Files)
                 {
-                    form.Add(new StreamContent(i.Data), i.Name, i.FileName);
+                    form.Add(new StreamContent(i.Data), "file", i.FileName);
                 }
 
                 form.Add(new StringContent(model.UseFilename.ToString()), "use_filename");
@@ -37,13 +40,13 @@ namespace image4ioDotNetSDK
                 var result = await client.PostAsync("v0.1/upload?path=" + (model.Path), form);
                 var jsonResponse = await result.Content.ReadAsStringAsync();
                 var response = Newtonsoft.Json.JsonConvert.DeserializeObject<UploadResponseModel>(jsonResponse);
-                
+
                 response.IsSuccessfull = result.IsSuccessStatusCode;
 
                 return response;
-                
-                
-                
+
+
+
             }
             catch (Exception e)
             {

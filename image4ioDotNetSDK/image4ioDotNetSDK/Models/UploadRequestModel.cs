@@ -21,7 +21,6 @@ namespace image4ioDotNetSDK.Models
         public class File
         {
             public Stream Data { get; set; }
-            public string Name { get; set; }
             public string FileName { get; set; }
         }
 
