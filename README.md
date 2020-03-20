@@ -11,12 +11,7 @@ image4io is a cloud service where your images are uploaded, moved, copied, feche
 To send requests to API, APIKey.key and APISecret.key must be created first. Then, APIKey and APISecret should written into files.
 
  ```charp
-  public TestsFixture()
-        {
-            string apiKey = File.ReadAllText("APIKey.key");
-            string apiSecret = File.ReadAllText("APISecret.key");
-            Api = new Image4ioAPI(apisecret,apikey);
-        }
+            Image4ioAPI Api = new Image4ioAPI("{APIKEY}","{API SECRET}");
 ```
 
 ## Usage
