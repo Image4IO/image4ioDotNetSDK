@@ -55,27 +55,25 @@ namespace image4ioDotNetSDKTest
             var model = new image4ioDotNetSDK.Models.UploadRequestModel()
             {
                 Path = "playlistfolder",
-                Overwrite=true,
-                UseFilename=false
+                Overwrite = true,
+                UseFilename = false
             };
 
             FileStream stream = File.Open(@"Assets\a.png", FileMode.Open);
             model.Files.Add(new image4ioDotNetSDK.Models.UploadRequestModel.File
             {
                 Data = stream,
-                FileName = "a.png",
-                Name = "a.png"
+                FileName = "a.png"
             });
-            
+
             stream = File.Open(@"Assets\b.png", FileMode.Open);
             model.Files.Add(new image4ioDotNetSDK.Models.UploadRequestModel.File
             {
                 Data = stream,
-                FileName = "b.png",
-                Name = "b.png"
+                FileName = "b.png"
             });
             var response = fixture.Api.Upload(model);
-              uploadedFileName = response.uploadedFiles[0].name;
+            uploadedFileName = response.uploadedFiles[0].name;
 
             Assert.True(response.IsSuccessfull);
         }
@@ -113,7 +111,6 @@ namespace image4ioDotNetSDKTest
             var model = new image4ioDotNetSDK.Models.CreateFolderRequestModel
             {
                 Path = "playlistfolder"
-
             };
 
             var response = fixture.Api.CreateFolder(model);
@@ -142,8 +139,7 @@ namespace image4ioDotNetSDKTest
             var model = new image4ioDotNetSDK.Models.FetchRequestModel
             {
                 From = "https://images.pexels.com/photos/853168/pexels-photo-853168.jpeg",
-                 Target_path = "playlistfolder"
-
+                Target_path = "playlistfolder"
             };
 
             var response = fixture.Api.Fetch(model);
