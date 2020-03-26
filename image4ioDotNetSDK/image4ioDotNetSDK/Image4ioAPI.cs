@@ -44,9 +44,6 @@ namespace image4ioDotNetSDK
                 response.IsSuccessfull = result.IsSuccessStatusCode;
 
                 return response;
-
-
-
             }
             catch (Exception e)
             {
