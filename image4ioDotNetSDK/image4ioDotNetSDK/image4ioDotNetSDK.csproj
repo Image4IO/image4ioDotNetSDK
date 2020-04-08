@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net472;netcoreapp2.0;netcoreapp2.1;netcoreapp2.2</TargetFrameworks>
+    <TargetFrameworks>net472;netcoreapp2.0;netcoreapp2.1;netcoreapp2.2;netcoreapp3.1</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageIconUrl>https://s.gravatar.com/avatar/0951b3b16c3110685ea364f8cab46113</PackageIconUrl>
     <RepositoryUrl>https://github.com/Image4IO/image4ioDotNetSDK</RepositoryUrl>
@@ -9,7 +9,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Company>image4io</Company>
     <Authors>image4io</Authors>
-    <Version>0.1.1</Version>
+    <Version>0.1.2</Version>
     <RepositoryType>git</RepositoryType>
     <PackageId>image4io.DotNet</PackageId>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -17,7 +17,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="BouncyCastle" Version="1.8.6" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 
   <ItemGroup>
