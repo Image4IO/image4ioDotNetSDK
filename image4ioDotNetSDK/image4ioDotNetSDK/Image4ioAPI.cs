@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace image4ioDotNetSDK
 {
-    public class Image4ioAPI
+    public class Image4ioAPI : IImage4ioAPI
     {
         private static readonly HttpClient client = new HttpClient();
 

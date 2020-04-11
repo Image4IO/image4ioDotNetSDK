@@ -5,15 +5,13 @@ using System;
 
 namespace image4ioDotNetSDKTest
 {
-    public class TestsFixture : IDisposable
+    public class APISandboxUnitTestFixture : IDisposable
     {
-        public Image4ioAPI Api { get; set; }
+        public Image4ioAPISandbox Api { get; set; }
 
-        public TestsFixture()
+        public APISandboxUnitTestFixture()
         {
-            string apiKey = File.ReadAllText("APIKey.key");
-            string apiSecret = File.ReadAllText("APISecret.key");
-            Api = new Image4ioAPI(apiKey, apiSecret);
+            Api = new Image4ioAPISandbox("", "");
         }
 
         public void Dispose()
@@ -22,11 +20,11 @@ namespace image4ioDotNetSDKTest
         }
     }
 
-    public class UnitTests : IClassFixture<TestsFixture>
+    public class APISandboxUnitTest : IClassFixture<APISandboxUnitTestFixture>
     {
-        readonly TestsFixture fixture;
+        readonly APISandboxUnitTestFixture fixture;
 
-        public UnitTests(TestsFixture _fixture)
+        public APISandboxUnitTest(APISandboxUnitTestFixture _fixture)
         {
             this.fixture = _fixture;
         }
