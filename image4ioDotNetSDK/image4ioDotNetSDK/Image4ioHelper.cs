@@ -12,7 +12,7 @@ namespace image4ioDotNetSDK
         public static string SignedUrlToken(string signKey, DateTime Expire, string IPAddress, string Protocol, string Parameters)
         {
             TimeSpan t = Expire - new DateTime(1970, 1, 1);
-            var str = ((long)t.TotalSeconds).ToString() + "," + Protocol + "," + IPAddress + "," + Parameters;
+            var str = ((long)t.TotalSeconds).ToString() + ";" + Protocol + ";" + IPAddress + ";" + Parameters;
 
             if (string.IsNullOrEmpty(signKey) || str.Length < 3)
                 throw new ArgumentException("Missing or wrong argument");
