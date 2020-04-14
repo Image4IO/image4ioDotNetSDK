@@ -9,7 +9,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Company>image4io</Company>
     <Authors>image4io</Authors>
-    <Version>0.2.0</Version>
+    <Version>0.2.1</Version>
     <RepositoryType>git</RepositoryType>
     <PackageId>image4io.DotNet</PackageId>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>

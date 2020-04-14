@@ -9,26 +9,15 @@ namespace image4ioDotNetSDK
 {
     public static class Image4ioHelper
     {
-        public static string SignedUrlToken(string signKey, DateTime Expire, string IPAddress, string Protocol)
+        public static string SignedUrlToken(string signKey, DateTime Expire, string IPAddress, string Protocol, string Parameters)
         {
             TimeSpan t = Expire - new DateTime(1970, 1, 1);
-            var model = new TokenGeneratorModel()
-            {
-                ClientIp = IPAddress,
-                Expire = ((long)t.TotalSeconds).ToString(),
-                Protocol = Protocol
-            };
+            var str = ((long)t.TotalSeconds).ToString() + "," + Protocol + "," + IPAddress + "," + Parameters;
 
-            var json = JsonConvert.SerializeObject(model,
-                           Formatting.None,
-                           new JsonSerializerSettings
-                           {
-                               NullValueHandling = NullValueHandling.Ignore
-                           });
-            if (string.IsNullOrEmpty(signKey) || json.Length < 3)
+            if (string.IsNullOrEmpty(signKey) || str.Length < 3)
                 throw new ArgumentException("Missing or wrong argument");
             else
-                return BlowfishEncrypt(json, signKey);
+                return BlowfishEncrypt(str, signKey);
         }
 
         static private string BlowfishEncrypt(string strValue, string key)
@@ -57,14 +46,5 @@ namespace image4ioDotNetSDK
             }
         }
 
-        private class TokenGeneratorModel
-        {
-            [JsonProperty("expire")]
-            public string Expire { get; set; }
-            [JsonProperty("protocol")]
-            public string Protocol { get; set; }
-            [JsonProperty("client_ip")]
-            public string ClientIp { get; set; }
-        }
     }
 }
