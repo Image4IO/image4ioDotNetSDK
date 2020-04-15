@@ -117,11 +117,8 @@ namespace image4ioDotNetSDK
                 {
                     throw new MissingMemberException("source parameter is required");
                 }
-                string json = Newtonsoft.Json.JsonConvert.SerializeObject(model);
-                StringContent stringContent = new StringContent(json, System.Text.Encoding.Default, "application/json");
 
-
-                var result = await client.PutAsync("v0.1/copy?source=" + (model.Source) + "&target_path=" + (model.Target_Path), stringContent);
+                var result = await client.PutAsync("v0.1/copy?source=" + (model.Source) + "&target_path=" + (model.Target_Path), null);
                 var jsonResponse = await result.Content.ReadAsStringAsync();
                 var response = Newtonsoft.Json.JsonConvert.DeserializeObject<CopyResponseModel>(jsonResponse);
                 response.IsSuccessfull = result.IsSuccessStatusCode;
