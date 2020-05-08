@@ -1,4 +1,8 @@
 ﻿using image4ioDotNetSDK.Models;
+using image4ioDotNetSDK.Models.Exception;
+using image4ioDotNetSDK.Models.Request;
+using image4ioDotNetSDK.Models.Response;
+using Newtonsoft.Json;
 using System;
 using System.Net.Http;
 using System.Text;
@@ -9,6 +13,7 @@ namespace image4ioDotNetSDK
     public class Image4ioAPI : IImage4ioAPI
     {
         private static readonly HttpClient client = new HttpClient();
+        private readonly string API_VERSION = "v1.0";
 
         public Image4ioAPI(string APIKey, string APISecret)
         {
@@ -21,10 +26,29 @@ namespace image4ioDotNetSDK
             }
         }
 
+        public SubscriptionResponse Subscription() => SubscriptionAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
-        public UploadResponseModel Upload(UploadRequestModel model) => UploadAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+        public async Task<SubscriptionResponse> SubscriptionAsync()
+        {
+            try
+            {
+                var result = await client.GetAsync(API_VERSION + "/subscription");
+                var jsonResponse = await result.Content.ReadAsStringAsync();
+                var response = Newtonsoft.Json.JsonConvert.DeserializeObject<SubscriptionResponse>(jsonResponse);
 
-        public async Task<UploadResponseModel> UploadAsync(UploadRequestModel model)
+                return response;
+            }
+            catch (Exception e)
+            {
+                var ex = new Image4ioException("There is an error while getting subscription", e);
+                throw ex;
+            }
+        }
+
+
+        public UploadImageResponse Upload(UploadImageRequest model) => UploadAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+
+        public async Task<UploadImageResponse> UploadAsync(UploadImageRequest model)
         {
             try
             {
@@ -34,237 +58,340 @@ namespace image4ioDotNetSDK
                     form.Add(new StreamContent(i.Data), "file", i.FileName);
                 }
 
-                form.Add(new StringContent(model.UseFilename.ToString()), "use_filename");
+                form.Add(new StringContent(model.UseFilename.ToString()), "useFilename");
                 form.Add(new StringContent(model.Overwrite.ToString()), "overwrite");
+                form.Add(new StringContent(model.Path.ToString()), "path");
 
-                var result = await client.PostAsync("v0.1/upload?path=" + (model.Path), form);
+                var result = await client.PostAsync(API_VERSION + "/uploadImage", form);
                 var jsonResponse = await result.Content.ReadAsStringAsync();
-                var response = Newtonsoft.Json.JsonConvert.DeserializeObject<UploadResponseModel>(jsonResponse);
-
-                response.IsSuccessfull = result.IsSuccessStatusCode;
+                var response = Newtonsoft.Json.JsonConvert.DeserializeObject<UploadImageResponse>(jsonResponse);
 
                 return response;
             }
             catch (Exception e)
             {
-                throw e;
+                var ex = new Image4ioException("There is an error while uploading image(s)", e);
+                throw ex;
             }
         }
 
 
-        public GetResponseModel Get(GetRequestModel model) => GetAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+        public ImagesResponse GetImages(ImagesRequest model) => GetImagesAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
 
-        public async Task<GetResponseModel> GetAsync(GetRequestModel model)
+        public async Task<ImagesResponse> GetImagesAsync(ImagesRequest model)
         {
             try
             {
-                if (string.IsNullOrEmpty(model.Name))
+                var request = new HttpRequestMessage()
                 {
-                    throw new MissingMemberException("'name' parameter is required");
-                }
-                string json = Newtonsoft.Json.JsonConvert.SerializeObject(model);
+                    Method=HttpMethod.Get,
+                    RequestUri = new Uri(API_VERSION + "/images"),
+                    Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.Default, "application/json")
+                };
 
-                var result = await client.GetAsync("v0.1/get?name=" + (model.Name));
+                var result = await client.SendAsync(request);
                 var jsonResponse = await result.Content.ReadAsStringAsync();
-                var response = Newtonsoft.Json.JsonConvert.DeserializeObject<GetResponseModel>(jsonResponse);
-                response.IsSuccessfull = result.IsSuccessStatusCode;
+                var response = Newtonsoft.Json.JsonConvert.DeserializeObject<ImagesResponse>(jsonResponse);
 
                 return response;
             }
             catch (Exception e)
             {
-                throw e;
+                var ex = new Image4ioException("There is an error while getting image(s)", e);
+                throw ex;
             }
         }
 
 
-        public CreateFolderResponseModel CreateFolder(CreateFolderRequestModel model) => CreateFolderAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+        public CreateFolderResponse CreateFolder(CreateFolderRequest model) => CreateFolderAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
 
-        public async Task<CreateFolderResponseModel> CreateFolderAsync(CreateFolderRequestModel model)
+        public async Task<CreateFolderResponse> CreateFolderAsync(CreateFolderRequest model)
         {
             try
             {
-                if (string.IsNullOrEmpty(model.Path))
-                {
-                    throw new MissingMemberException("'name' parameter is required");
-                }
-                string json = Newtonsoft.Json.JsonConvert.SerializeObject(model);
-                StringContent stringContent = new StringContent(json, System.Text.Encoding.Default, "application/json");
-
-                var result = await client.PostAsync("v0.1/CreateFolder?path=" + (model.Path), stringContent);
-                var jsonResponse = await result.Content.ReadAsStringAsync();
-                var response = Newtonsoft.Json.JsonConvert.DeserializeObject<CreateFolderResponseModel>(jsonResponse);
-                response.IsSuccessfull = result.IsSuccessStatusCode;
-
-                return response;
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-
-        }
-
-
-
-        public CopyResponseModel Copy(CopyRequestModel model) => CopyAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
-
-        public async Task<CopyResponseModel> CopyAsync(CopyRequestModel model)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(model.Source))
-                {
-                    throw new MissingMemberException("source parameter is required");
-                }
-                string json = Newtonsoft.Json.JsonConvert.SerializeObject(model);
+                string json = JsonConvert.SerializeObject(model);
                 StringContent stringContent = new StringContent(json, Encoding.Default, "application/json");
 
-                var result = await client.PutAsync("v0.1/copy", stringContent);
+                var result = await client.PostAsync(API_VERSION + "/createFolder", stringContent);
                 var jsonResponse = await result.Content.ReadAsStringAsync();
-                var response = Newtonsoft.Json.JsonConvert.DeserializeObject<CopyResponseModel>(jsonResponse);
-                response.IsSuccessfull = result.IsSuccessStatusCode;
+                var response = JsonConvert.DeserializeObject<CreateFolderResponse>(jsonResponse);
 
                 return response;
             }
             catch (Exception e)
             {
-                throw e;
+                var ex = new Image4ioException("There is an error while creating folder", e);
+                throw ex;
             }
         }
 
-        public MoveResponseModel Move(MoveRequestModel model) => MoveAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+        public CopyImageResponse CopyImage(CopyImageRequest model) => CopyImageAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
 
-        public async Task<MoveResponseModel> MoveAsync(MoveRequestModel model)
+        public async Task<CopyImageResponse> CopyImageAsync(CopyImageRequest model)
         {
             try
             {
-                if (string.IsNullOrEmpty(model.Source))
+                string json = JsonConvert.SerializeObject(model);
+                StringContent stringContent = new StringContent(json, Encoding.Default, "application/json");
+
+                var result = await client.PutAsync(API_VERSION + "/copyImage", stringContent);
+                var jsonResponse = await result.Content.ReadAsStringAsync();
+                var response = JsonConvert.DeserializeObject<CopyImageResponse>(jsonResponse);
+
+                return response;
+            }
+            catch (Exception e)
+            {
+                var ex = new Image4ioException("There is an error while copying image", e);
+                throw ex;
+            }
+        }
+
+        public MoveImageResponse MoveImage(MoveImageRequest model) => MoveImageAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+
+        public async Task<MoveImageResponse> MoveImageAsync(MoveImageRequest model)
+        {
+            try
+            {
+                string json = JsonConvert.SerializeObject(model);
+                StringContent stringContent = new StringContent(json, Encoding.Default, "application/json");
+
+                var result = await client.PutAsync(API_VERSION+ "/moveImage", stringContent);
+                var jsonResponse = await result.Content.ReadAsStringAsync();
+                var response = JsonConvert.DeserializeObject<MoveImageResponse>(jsonResponse);
+
+                return response;
+            }
+            catch (Exception e)
+            {
+                var ex = new Image4ioException("There is an error while moving image", e);
+                throw ex;
+            }
+
+        }
+
+        public ListFolderResponse ListFolder(ListFolderRequest model) => ListFolderAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+
+        public async Task<ListFolderResponse> ListFolderAsync(ListFolderRequest model)
+        {
+            try
+            {
+                var request = new HttpRequestMessage()
                 {
+                    Method = HttpMethod.Get,
+                    RequestUri = new Uri(API_VERSION + "/listFolder"),
+                    Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.Default, "application/json")
+                };
 
-                }
-                string json = Newtonsoft.Json.JsonConvert.SerializeObject(model);
-                StringContent stringContent = new StringContent(json, System.Text.Encoding.Default, "application/json");
-
-                var result = await client.PutAsync("v0.1/move?source=" + (model.Source) + "&target_path=" + (model.Target_Path), stringContent);
-
+                var result = await client.SendAsync(request);
                 var jsonResponse = await result.Content.ReadAsStringAsync();
-                var response = Newtonsoft.Json.JsonConvert.DeserializeObject<MoveResponseModel>(jsonResponse);
-
-                response.IsSuccessfull = result.IsSuccessStatusCode;
-
-                return response;
-
-
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-
-        }
-
-        public ListFolderResponseModel ListFolder(ListFolderRequestModel model) => ListFolderAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
-
-        public async Task<ListFolderResponseModel> ListFolderAsync(ListFolderRequestModel model)
-        {
-            try
-            {
-                var result = await client.GetAsync("v0.1/listfolder?path=" + (model.Path));
-                var jsonResponse = await result.Content.ReadAsStringAsync();
-                var response = Newtonsoft.Json.JsonConvert.DeserializeObject<ListFolderResponseModel>(jsonResponse);
-
-                response.IsSuccessfull = result.IsSuccessStatusCode;
-
-
-
-
+                var response = JsonConvert.DeserializeObject<ListFolderResponse>(jsonResponse);
 
                 return response;
             }
             catch (Exception e)
             {
-                throw e;
+                var ex = new Image4ioException("There is an error while listing folder", e);
+                throw ex;
             }
         }
 
-        public DeleteResponseModel Delete(DeleteRequestModel model) => DeleteAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+        public DeleteImageResponse DeleteImage(DeleteImageRequest model) => DeleteImageAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
 
-        public async Task<DeleteResponseModel> DeleteAsync(DeleteRequestModel model)
+        public async Task<DeleteImageResponse> DeleteImageAsync(DeleteImageRequest model)
         {
             try
             {
-                if (string.IsNullOrEmpty(model.name))
+                var request = new HttpRequestMessage()
                 {
-                    throw new MissingMemberException("you need to set 'file name'");
-                }
+                    Method = HttpMethod.Delete,
+                    RequestUri = new Uri(API_VERSION + "/deleteImage"),
+                    Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.Default, "application/json")
+                };
 
-                var result = await client.DeleteAsync("v0.1/deletefile?name=" + (model.name));
+                var result = await client.SendAsync(request);
                 var jsonResponse = await result.Content.ReadAsStringAsync();
-                var response = Newtonsoft.Json.JsonConvert.DeserializeObject<DeleteResponseModel>(jsonResponse);
-
-                response.IsSuccessfull = result.IsSuccessStatusCode;
+                var response = JsonConvert.DeserializeObject<DeleteImageResponse>(jsonResponse);
 
                 return response;
             }
             catch (Exception e)
             {
-                throw e;
+                var ex = new Image4ioException("There is an error while deleting an image", e);
+                throw ex;
             }
         }
 
-        public DeleteFolderResponseModel DeleteFolder(DeleteFolderRequestModel model) => DeleteFolderAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+        public DeleteFolderResponse DeleteFolder(DeleteFolderRequest model) => DeleteFolderAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
 
-        public async Task<DeleteFolderResponseModel> DeleteFolderAsync(DeleteFolderRequestModel model)
+        public async Task<DeleteFolderResponse> DeleteFolderAsync(DeleteFolderRequest model)
         {
             try
             {
-                if (string.IsNullOrEmpty(model.Path))
+                var request = new HttpRequestMessage()
                 {
-                    throw new MissingMemberException("you need to set 'file name'");
-                }
+                    Method = HttpMethod.Delete,
+                    RequestUri = new Uri(API_VERSION + "/deleteFolder"),
+                    Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.Default, "application/json")
+                };
 
-                var result = await client.DeleteAsync("v0.1/deletefolder?path=" + (model.Path));
+                var result = await client.SendAsync(request);
                 var jsonResponse = await result.Content.ReadAsStringAsync();
-                var response = Newtonsoft.Json.JsonConvert.DeserializeObject<DeleteFolderResponseModel>(jsonResponse);
-
-                response.IsSuccessfull = result.IsSuccessStatusCode;
+                var response = JsonConvert.DeserializeObject<DeleteFolderResponse>(jsonResponse);
 
                 return response;
             }
             catch (Exception e)
             {
-                throw e;
+                var ex = new Image4ioException("There is an error while deleting an image", e);
+                throw ex;
             }
         }
 
 
-        public FetchResponseModel Fetch(FetchRequestModel model) => FetchAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+        public FetchImageResponse FetchImage(FetchImageRequest model) => FetchImageAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
 
-        public async Task<FetchResponseModel> FetchAsync(FetchRequestModel model)
+        public async Task<FetchImageResponse> FetchImageAsync(FetchImageRequest model)
         {
             try
             {
-                if (string.IsNullOrEmpty(model.From))
-                {
+                string json = JsonConvert.SerializeObject(model);
+                StringContent stringContent = new StringContent(json, Encoding.Default, "application/json");
 
-                }
-                string json = Newtonsoft.Json.JsonConvert.SerializeObject(model);
-                StringContent stringContent = new StringContent(json, System.Text.Encoding.Default, "application/json");
-
-                var result = await client.PostAsync("v0.1/fetch?from=" + (model.From) + "&target_path" + (model.Target_path), stringContent);
-
+                var result = await client.PostAsync(API_VERSION+ "/fetchImage", stringContent);
                 var jsonResponse = await result.Content.ReadAsStringAsync();
-                var response = Newtonsoft.Json.JsonConvert.DeserializeObject<FetchResponseModel>(jsonResponse);
-
-                response.IsSuccessfull = result.IsSuccessStatusCode;
+                var response = JsonConvert.DeserializeObject<FetchImageResponse>(jsonResponse);
 
                 return response;
             }
             catch (Exception e)
             {
-                throw e;
+                var ex = new Image4ioException("There is an error while deleting an image", e);
+                throw ex;
             }
         }
+
+        #region Streams
+        public StartUploadStreamResponse StartUploadStream(StartUploadStreamRequest model) => StartUploadStreamAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+
+        public async Task<StartUploadStreamResponse> StartUploadStreamAsync(StartUploadStreamRequest model)
+        {
+            try
+            {
+                string json = JsonConvert.SerializeObject(model);
+                StringContent stringContent = new StringContent(json, Encoding.Default, "application/json");
+
+                var result = await client.PostAsync(API_VERSION + "/uploadStream", stringContent);
+                var jsonResponse = await result.Content.ReadAsStringAsync();
+                var response = JsonConvert.DeserializeObject<StartUploadStreamResponse>(jsonResponse);
+
+                return response;
+            }
+            catch (Exception e)
+            {
+                var ex = new Image4ioException("There is an error while starting to upload a stream", e);
+                throw ex;
+            }
+        }
+
+        public void UploadStreamPart(UploadStreamPartRequest model) => UploadStreamPartAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+
+        public async Task UploadStreamPartAsync(UploadStreamPartRequest model)
+        {
+            try
+            {
+                MultipartFormDataContent form = new MultipartFormDataContent();
+                
+                form.Add(new StreamContent(model.StreamPart), "part");
+                form.Add(new StringContent(model.PartId.ToString()), "partId");
+                form.Add(new StringContent(model.Token), "token");
+                form.Add(new StringContent(model.FileName), "filename");
+
+                var request = new HttpRequestMessage(new HttpMethod("PATCH"), new Uri(API_VERSION + "/uploadStream"));
+
+                var result = await client.SendAsync(request);
+                if (!result.IsSuccessStatusCode)
+                {
+                    throw new Exception("");
+                }
+            }
+            catch (Exception e)
+            {
+                var ex = new Image4ioException("There is an error while uploading stream part", e);
+                throw ex;
+            }
+        }
+
+        public FinalizeStreamResponse FinalizeStream(FinalizeStreamRequest model) => FinalizeStreamAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+
+        public async Task<FinalizeStreamResponse> FinalizeStreamAsync(FinalizeStreamRequest model)
+        {
+            try
+            {
+                string json = JsonConvert.SerializeObject(model);
+                StringContent stringContent = new StringContent(json, Encoding.Default, "application/json");
+
+                var result = await client.PostAsync(API_VERSION + "/finalizeStream", stringContent);
+                var jsonResponse = await result.Content.ReadAsStringAsync();
+                var response = JsonConvert.DeserializeObject<FinalizeStreamResponse>(jsonResponse);
+
+                return response;
+            }
+            catch (Exception e)
+            {
+                var ex = new Image4ioException("There is an error while finalizing the stream", e);
+                throw ex;
+            }
+        }
+
+        public StreamsResponse GetStreams(StreamsRequest model) => GetStreamsAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+        public async Task<StreamsResponse> GetStreamsAsync(StreamsRequest model)
+        {
+            try
+            {
+                var request = new HttpRequestMessage()
+                {
+                    Method = HttpMethod.Get,
+                    RequestUri = new Uri(API_VERSION + "/streams"),
+                    Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.Default, "application/json")
+                };
+
+                var result = await client.SendAsync(request);
+                var jsonResponse = await result.Content.ReadAsStringAsync();
+                var response = JsonConvert.DeserializeObject<StreamsResponse>(jsonResponse);
+
+                return response;
+            }
+            catch (Exception e)
+            {
+                var ex = new Image4ioException("There is an error while getting stream(s)", e);
+                throw ex;
+            }
+        }
+        public DeleteStreamResponse DeleteStream(DeleteStreamRequest model) => DeleteStreamAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+        public async Task<DeleteStreamResponse> DeleteStreamAsync(DeleteStreamRequest model)
+        {
+            try
+            {
+                var request = new HttpRequestMessage()
+                {
+                    Method = HttpMethod.Delete,
+                    RequestUri = new Uri(API_VERSION + "/deleteStream"),
+                    Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.Default, "application/json")
+                };
+
+                var result = await client.SendAsync(request);
+                var jsonResponse = await result.Content.ReadAsStringAsync();
+                var response = JsonConvert.DeserializeObject<DeleteStreamResponse>(jsonResponse);
+
+                return response;
+            }
+            catch (Exception e)
+            {
+                var ex = new Image4ioException("There is an error while deleting a stream", e);
+                throw ex;
+            }
+        }
+        #endregion
     }
 }

@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace image4ioDotNetSDK.Models
+namespace image4ioDotNetSDK.Models.Request
 {
-    public class CreateFolderRequestModel
+    public class DeleteStreamRequest
     {
-        [JsonProperty("path")]
-        public string Path { get; set; }
+        [JsonProperty("name")]
+        public string Name { get; set; }
     }
 }

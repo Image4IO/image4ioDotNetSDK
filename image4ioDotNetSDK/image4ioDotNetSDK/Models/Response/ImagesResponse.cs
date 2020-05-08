@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace image4ioDotNetSDK.Models
 {
-   public class GetResponseModel : BaseResponseModel
+   public class ImagesResponse : BaseResponse
     {
         [JsonProperty("name")]
         public string Name { get; set; }

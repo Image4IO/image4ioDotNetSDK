@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,17 +8,16 @@ using System.Threading.Tasks;
 
 namespace image4ioDotNetSDK.Models
 {
- public   class CreateFolderResponseModel : BaseResponseModel
+    public class DeleteFolderResponse : BaseResponse
     {
+        public Folder DeletedFolder { get; set; }
 
-        public CreatedFolder createdFolder { get; set; }
-
-        public class CreatedFolder
+        public class Folder
         {
-            [JsonProperty("name")]
+            [JsonProperty(PropertyName = "name")]
             public string Name { get; set; }
 
-            [JsonProperty("status")]
+            [JsonProperty(PropertyName = "status")]
             public string Status { get; set; }
         }
 

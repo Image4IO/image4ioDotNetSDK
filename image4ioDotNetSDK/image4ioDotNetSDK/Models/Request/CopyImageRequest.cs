@@ -2,21 +2,17 @@
 
 namespace image4ioDotNetSDK.Models
 {
-    public class CopyRequestModel
+    public class CopyImageRequest
     {
 
         [JsonProperty("source")]
         public string Source { get; set; }
-
-        [JsonProperty("target_path", NullValueHandling = NullValueHandling.Ignore)]
-        public string Target_Path { get; set; }
-
+        [JsonProperty("targetPath",NullValueHandling=NullValueHandling.Ignore)]
+        public string TargetPath { get; set; }
         [JsonProperty("name")]
         public string Name { get; set; }
-
-        [JsonProperty("use_filename")]
+        [JsonProperty("useFilename")]
         public bool UseFilename { get; set; }
-
         [JsonProperty("overwrite")]
         public bool Overwrite { get; set; }
     }

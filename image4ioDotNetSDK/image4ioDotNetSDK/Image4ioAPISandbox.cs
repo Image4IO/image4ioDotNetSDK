@@ -1,4 +1,6 @@
 ﻿using image4ioDotNetSDK.Models;
+using image4ioDotNetSDK.Models.Request;
+using image4ioDotNetSDK.Models.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,174 +15,315 @@ namespace image4ioDotNetSDK
         {
         }
 
-        public UploadResponseModel Upload(UploadRequestModel model) => UploadAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
-
-        public async Task<UploadResponseModel> UploadAsync(UploadRequestModel model)
+        public CopyImageResponse CopyImage(CopyImageRequest model)
         {
-            var response = new UploadResponseModel
-            {
-                IsSuccessfull = true,
-                uploadedFiles = new List<UploadResponseModel.UploadedFile>()
-            };
-
-            foreach (var image in model.Files)
-            {
-                response.uploadedFiles.Add(new UploadResponseModel.UploadedFile
-                {
-                    orginal_name = image.FileName,
-                    name = model.UseFilename ? model.Path + image.FileName : model.Path + Guid.NewGuid().ToString()
-                });
-            }
-
-            return response;
+            throw new NotImplementedException();
         }
 
-
-        public GetResponseModel Get(GetRequestModel model) => GetAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
-
-        public async Task<GetResponseModel> GetAsync(GetRequestModel model)
+        public Task<CopyImageResponse> CopyImageAsync(CopyImageRequest model)
         {
-            return new GetResponseModel
-            {
-                CreatedAtUTC = DateTime.UtcNow,
-                Format = "jpg",
-                Height = 600,
-                IsSuccessfull = true,
-                Name = model.Name,
-                Size = 10000,
-                UpdatedAtUTC = DateTime.UtcNow,
-                UserGivenName = "image.jpg",
-                Width = 800
-            };
+            throw new NotImplementedException();
         }
 
-
-        public CreateFolderResponseModel CreateFolder(CreateFolderRequestModel model) => CreateFolderAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
-
-        public async Task<CreateFolderResponseModel> CreateFolderAsync(CreateFolderRequestModel model)
+        public CreateFolderResponse CreateFolder(CreateFolderRequest model)
         {
-            return new CreateFolderResponseModel
-            {
-                createdFolder = new CreateFolderResponseModel.CreatedFolder
-                {
-                    Name = model.Path.Split('/').Last(),
-                    Status = "created"
-                },
-                IsSuccessfull = true
-            };
+            throw new NotImplementedException();
         }
 
-
-        public CopyResponseModel Copy(CopyRequestModel model) => CopyAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
-
-        public async Task<CopyResponseModel> CopyAsync(CopyRequestModel model)
+        public Task<CreateFolderResponse> CreateFolderAsync(CreateFolderRequest model)
         {
-            return new CopyResponseModel
-            {
-                copiedfile = new CopyResponseModel.CopiedFile
-                {
-                    name = "image.jpg",
-                    status = "copied"
-                },
-                IsSuccessfull = true
-            };
+            throw new NotImplementedException();
         }
 
-
-        public MoveResponseModel Move(MoveRequestModel model) => MoveAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
-
-        public async Task<MoveResponseModel> MoveAsync(MoveRequestModel model)
+        public DeleteFolderResponse DeleteFolder(DeleteFolderRequest model)
         {
-            return new MoveResponseModel
-            {
-                IsSuccessfull = true,
-                movedfile = new MoveResponseModel.MovedFile
-                {
-                    Name = model.Source,
-                    Status = "copied"
-                }
-            };
+            throw new NotImplementedException();
         }
 
-        public ListFolderResponseModel ListFolder(ListFolderRequestModel model) => ListFolderAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
-
-        public async Task<ListFolderResponseModel> ListFolderAsync(ListFolderRequestModel model)
+        public Task<DeleteFolderResponse> DeleteFolderAsync(DeleteFolderRequest model)
         {
-            return new ListFolderResponseModel
-            {
-                IsSuccessfull = true,
-                files = new List<ListFolderResponseModel.File>
-                {
-                    new ListFolderResponseModel.File
-                    {
-                        CreatedAt=DateTime.Now,
-                        Folder="folder",
-                        Format="jpg",
-                        Height=600,
-                        Name="image.jpg",
-                        Orginal_name="imageorg.jpg",
-                        Size=10000,
-                        UpdatedAt=DateTime.UtcNow,
-                        Width=600
-                    }
-                },
-                folders = new List<ListFolderResponseModel.Folder>
-                {
-                    new ListFolderResponseModel.Folder
-                    {
-                        Name="folder2",
-                        Parent="/"
-                    }
-                }
-            };
+            throw new NotImplementedException();
         }
 
-
-        public DeleteResponseModel Delete(DeleteRequestModel model) => DeleteAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
-
-        public async Task<DeleteResponseModel> DeleteAsync(DeleteRequestModel model)
+        public DeleteImageResponse DeleteImage(DeleteImageRequest model)
         {
-            return new DeleteResponseModel
-            {
-                IsSuccessfull = true,
-                deletedfile = new DeleteResponseModel.DeletedFile
-                {
-                    name = "image.jpg",
-                    status = "copied"
-                }
-            };
+            throw new NotImplementedException();
         }
 
-
-        public DeleteFolderResponseModel DeleteFolder(DeleteFolderRequestModel model) => DeleteFolderAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
-
-        public async Task<DeleteFolderResponseModel> DeleteFolderAsync(DeleteFolderRequestModel model)
+        public Task<DeleteImageResponse> DeleteImageAsync(DeleteImageRequest model)
         {
-            return new DeleteFolderResponseModel
-            {
-                IsSuccessfull = true,
-                deletedFolder = new DeleteFolderResponseModel.DeletedFolder
-                {
-                    name = model.Path.Split('/').Last(),
-                    status = "deleted"
-                }
-            };
+            throw new NotImplementedException();
         }
 
-
-        public FetchResponseModel Fetch(FetchRequestModel model) => FetchAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
-
-        public async Task<FetchResponseModel> FetchAsync(FetchRequestModel model)
+        public DeleteStreamResponse DeleteStream(DeleteStreamRequest request)
         {
-            return new FetchResponseModel
-            {
-                IsSuccessfull = true,
-                fetchedfile = new FetchResponseModel.FetchedFile
-                {
-                    Name = model.Target_path + model.From.Split('/').Last(),
-                    Status = "fetched"
-                }
-            };
+            throw new NotImplementedException();
         }
+
+        public Task<DeleteStreamResponse> DeleteStreamAsync(DeleteStreamRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public FetchImageResponse FetchImage(FetchImageRequest model)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<FetchImageResponse> FetchImageAsync(FetchImageRequest model)
+        {
+            throw new NotImplementedException();
+        }
+
+        public FinalizeStreamResponse FinalizeStream(FinalizeStreamRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<FinalizeStreamResponse> FinalizeStreamAsync(FinalizeStreamRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ImagesResponse GetImages(ImagesRequest model)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ImagesResponse> GetImagesAsync(ImagesRequest model)
+        {
+            throw new NotImplementedException();
+        }
+
+        public StreamsResponse GetStreams(StreamsRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<StreamsResponse> GetStreamsAsync(StreamsRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ListFolderResponse ListFolder(ListFolderRequest model)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ListFolderResponse> ListFolderAsync(ListFolderRequest model)
+        {
+            throw new NotImplementedException();
+        }
+
+        public MoveImageResponse MoveImage(MoveImageRequest model)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<MoveImageResponse> MoveImageAsync(MoveImageRequest model)
+        {
+            throw new NotImplementedException();
+        }
+
+        public StartUploadStreamResponse StartUploadStream(StartUploadStreamRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<StartUploadStreamResponse> StartUploadStreamAsync(StartUploadStreamRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public UploadImageResponse Upload(UploadImageRequest model)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<UploadImageResponse> UploadAsync(UploadImageRequest model)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UploadStreamPart(UploadStreamPartRequest request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UploadStreamPartAsync(UploadStreamPartRequest request)
+        {
+            throw new NotImplementedException();
+        }
+        /*
+public UploadImageResponse Upload(UploadImageRequest model) => UploadAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+
+public async Task<UploadImageResponse> UploadAsync(UploadImageRequest model)
+{
+   var response = new UploadImageResponse
+   {
+       IsSuccessful = true,
+       uploadedFiles = new List<UploadImageResponse.UploadedFile>()
+   };
+
+   foreach (var image in model.Files)
+   {
+       response.uploadedFiles.Add(new UploadImageResponse.UploadedFile
+       {
+           orginal_name = image.FileName,
+           name = model.UseFilename ? model.Path + image.FileName : model.Path + Guid.NewGuid().ToString()
+       });
+   }
+
+   return response;
+}
+
+
+public ImagesResponse GetImages(ImagesRequest model) => GetImagesAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+
+public async Task<ImagesResponse> GetImagesAsync(ImagesRequest model)
+{
+   return new ImagesResponse
+   {
+       CreatedAtUTC = DateTime.UtcNow,
+       Format = "jpg",
+       Height = 600,
+       IsSuccessful = true,
+       Name = model.Name,
+       Size = 10000,
+       UpdatedAtUTC = DateTime.UtcNow,
+       UserGivenName = "image.jpg",
+       Width = 800
+   };
+}
+
+
+public CreateFolderResponse CreateFolder(CreateFolderRequest model) => CreateFolderAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+
+public async Task<CreateFolderResponse> CreateFolderAsync(CreateFolderRequest model)
+{
+   return new CreateFolderResponse
+   {
+       createdFolder = new CreateFolderResponse.CreatedFolder
+       {
+           Name = model.Path.Split('/').Last(),
+           Status = "created"
+       },
+       IsSuccessful = true
+   };
+}
+
+
+public CopyImageResponse CopyImage(CopyImageRequest model) => CopyImageAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+
+public async Task<CopyImageResponse> CopyImageAsync(CopyImageRequest model)
+{
+   return new CopyImageResponse
+   {
+       copiedfile = new CopyImageResponse.CopiedFile
+       {
+           name = "image.jpg",
+           status = "copied"
+       },
+       IsSuccessful = true
+   };
+}
+
+
+public MoveImageResponse MoveImage(MoveImageRequest model) => MoveImageAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+
+public async Task<MoveImageResponse> MoveImageAsync(MoveImageRequest model)
+{
+   return new MoveImageResponse
+   {
+       IsSuccessful = true,
+       movedfile = new MoveImageResponse.MovedFile
+       {
+           Name = model.Source,
+           Status = "copied"
+       }
+   };
+}
+
+public ListFolderResponse ListFolder(ListFolderRequest model) => ListFolderAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+
+public async Task<ListFolderResponse> ListFolderAsync(ListFolderRequest model)
+{
+   return new ListFolderResponse
+   {
+       IsSuccessful = true,
+       files = new List<ListFolderResponse.File>
+       {
+           new ListFolderResponse.File
+           {
+               CreatedAt=DateTime.Now,
+               Folder="folder",
+               Format="jpg",
+               Height=600,
+               Name="image.jpg",
+               Orginal_name="imageorg.jpg",
+               Size=10000,
+               UpdatedAt=DateTime.UtcNow,
+               Width=600
+           }
+       },
+       folders = new List<ListFolderResponse.Folder>
+       {
+           new ListFolderResponse.Folder
+           {
+               Name="folder2",
+               Parent="/"
+           }
+       }
+   };
+}
+
+
+public DeleteImageResponse DeleteImage(DeleteImageRequest model) => DeleteImageAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+
+public async Task<DeleteImageResponse> DeleteImageAsync(DeleteImageRequest model)
+{
+   return new DeleteImageResponse
+   {
+       IsSuccessful = true,
+       deletedfile = new DeleteImageResponse.DeletedFile
+       {
+           name = "image.jpg",
+           status = "copied"
+       }
+   };
+}
+
+
+public DeleteFolderResponse DeleteFolder(DeleteFolderRequest model) => DeleteFolderAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+
+public async Task<DeleteFolderResponse> DeleteFolderAsync(DeleteFolderRequest model)
+{
+   return new DeleteFolderResponse
+   {
+       IsSuccessful = true,
+       deletedFolder = new DeleteFolderResponse.DeletedFolder
+       {
+           name = model.Path.Split('/').Last(),
+           status = "deleted"
+       }
+   };
+}
+
+
+public FetchImageResponse FetchImage(FetchImageRequest model) => FetchImageAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+
+public async Task<FetchImageResponse> FetchImageAsync(FetchImageRequest model)
+{
+   return new FetchImageResponse
+   {
+       IsSuccessful = true,
+       fetchedfile = new FetchImageResponse.FetchedFile
+       {
+           Name = model.Target_path + model.From.Split('/').Last(),
+           Status = "fetched"
+       }
+   };
+}
+*/
     }
 }
