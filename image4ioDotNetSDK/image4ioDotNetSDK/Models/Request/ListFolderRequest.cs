@@ -9,5 +9,8 @@ namespace image4ioDotNetSDK.Models
     {
         [JsonProperty("path", NullValueHandling = NullValueHandling.Ignore)]
         public string Path { get; set; }
+
+        [JsonProperty("continuationToken", NullValueHandling = NullValueHandling.Ignore)]
+        public string ContinuationToken { get; set; }
     }
 }
