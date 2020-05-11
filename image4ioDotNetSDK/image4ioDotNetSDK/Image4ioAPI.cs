@@ -52,15 +52,16 @@ namespace image4ioDotNetSDK
         {
             try
             {
-                MultipartFormDataContent form = new MultipartFormDataContent();
+                MultipartFormDataContent form = new MultipartFormDataContent
+                {
+                    { new StringContent(model.UseFilename.ToString()), "useFilename" },
+                    { new StringContent(model.Overwrite.ToString()), "overwrite" },
+                    { new StringContent(model.Path.ToString()), "path" }
+                };
                 foreach (var i in model.Files)
                 {
                     form.Add(new StreamContent(i.Data), "file", i.FileName);
                 }
-
-                form.Add(new StringContent(model.UseFilename.ToString()), "useFilename");
-                form.Add(new StringContent(model.Overwrite.ToString()), "overwrite");
-                form.Add(new StringContent(model.Path.ToString()), "path");
 
                 var result = await client.PostAsync(API_VERSION + "/uploadImage", form);
                 var jsonResponse = await result.Content.ReadAsStringAsync();
@@ -84,7 +85,7 @@ namespace image4ioDotNetSDK
             {
                 var request = new HttpRequestMessage()
                 {
-                    Method=HttpMethod.Get,
+                    Method = HttpMethod.Get,
                     RequestUri = new Uri(API_VERSION + "/images"),
                     Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.Default, "application/json")
                 };
@@ -156,7 +157,7 @@ namespace image4ioDotNetSDK
                 string json = JsonConvert.SerializeObject(model);
                 StringContent stringContent = new StringContent(json, Encoding.Default, "application/json");
 
-                var result = await client.PutAsync(API_VERSION+ "/moveImage", stringContent);
+                var result = await client.PutAsync(API_VERSION + "/moveImage", stringContent);
                 var jsonResponse = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<MoveImageResponse>(jsonResponse);
 
@@ -258,7 +259,7 @@ namespace image4ioDotNetSDK
                 string json = JsonConvert.SerializeObject(model);
                 StringContent stringContent = new StringContent(json, Encoding.Default, "application/json");
 
-                var result = await client.PostAsync(API_VERSION+ "/fetchImage", stringContent);
+                var result = await client.PostAsync(API_VERSION + "/fetchImage", stringContent);
                 var jsonResponse = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<FetchImageResponse>(jsonResponse);
 
@@ -300,20 +301,26 @@ namespace image4ioDotNetSDK
         {
             try
             {
-                MultipartFormDataContent form = new MultipartFormDataContent();
-                
-                form.Add(new StreamContent(model.StreamPart), "part");
-                form.Add(new StringContent(model.PartId.ToString()), "partId");
-                form.Add(new StringContent(model.Token), "token");
-                form.Add(new StringContent(model.FileName), "filename");
 
-                var request = new HttpRequestMessage(new HttpMethod("PATCH"), new Uri(API_VERSION + "/uploadStream"));
+                MultipartFormDataContent form = new MultipartFormDataContent
+                {
+                    { new StreamContent(model.StreamPart), "Part",model.FileName },
+                    { new StringContent(model.PartId.ToString()), "PartId" },
+                    { new StringContent(model.Token), "Token" },
+                    { new StringContent(model.FileName), "FileName" }
+                };
+
+                var request = new HttpRequestMessage(new HttpMethod("PATCH"), new Uri(client.BaseAddress + API_VERSION + "/uploadStream"))
+                {
+                    Content = form
+                };
 
                 var result = await client.SendAsync(request);
                 if (!result.IsSuccessStatusCode)
                 {
                     throw new Exception("");
                 }
+
             }
             catch (Exception e)
             {
