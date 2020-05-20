@@ -14,12 +14,13 @@ namespace image4ioDotNetSDK
     {
         private static readonly HttpClient client = new HttpClient();
         private readonly string API_VERSION = "v1.0";
+        private readonly string BASE_ADDRESS = "https://api.image4.io";
 
         public Image4ioAPI(string APIKey, string APISecret)
         {
             if (client == null || client.BaseAddress == null)
             {
-                client.BaseAddress = new Uri("https://api.image4.io");
+                client.BaseAddress = new Uri(BASE_ADDRESS);
 
                 var byteArray = Encoding.ASCII.GetBytes(APIKey + ":" + APISecret);
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
@@ -34,7 +35,7 @@ namespace image4ioDotNetSDK
             {
                 var result = await client.GetAsync(API_VERSION + "/subscription");
                 var jsonResponse = await result.Content.ReadAsStringAsync();
-                var response = Newtonsoft.Json.JsonConvert.DeserializeObject<SubscriptionResponse>(jsonResponse);
+                var response = JsonConvert.DeserializeObject<SubscriptionResponse>(jsonResponse);
 
                 return response;
             }
@@ -65,7 +66,7 @@ namespace image4ioDotNetSDK
 
                 var result = await client.PostAsync(API_VERSION + "/uploadImage", form);
                 var jsonResponse = await result.Content.ReadAsStringAsync();
-                var response = Newtonsoft.Json.JsonConvert.DeserializeObject<UploadImageResponse>(jsonResponse);
+                var response = JsonConvert.DeserializeObject<UploadImageResponse>(jsonResponse);
 
                 return response;
             }
@@ -86,13 +87,13 @@ namespace image4ioDotNetSDK
                 var request = new HttpRequestMessage()
                 {
                     Method = HttpMethod.Get,
-                    RequestUri = new Uri(API_VERSION + "/images"),
+                    RequestUri = new Uri(BASE_ADDRESS+"/"+API_VERSION + "/images"),
                     Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.Default, "application/json")
                 };
 
                 var result = await client.SendAsync(request);
                 var jsonResponse = await result.Content.ReadAsStringAsync();
-                var response = Newtonsoft.Json.JsonConvert.DeserializeObject<ImagesResponse>(jsonResponse);
+                var response = JsonConvert.DeserializeObject<ImagesResponse>(jsonResponse);
 
                 return response;
             }
@@ -180,7 +181,7 @@ namespace image4ioDotNetSDK
                 var request = new HttpRequestMessage()
                 {
                     Method = HttpMethod.Get,
-                    RequestUri = new Uri(API_VERSION + "/listFolder"),
+                    RequestUri = new Uri(BASE_ADDRESS+"/"+API_VERSION + "/listFolder"),
                     Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.Default, "application/json")
                 };
 
@@ -206,7 +207,7 @@ namespace image4ioDotNetSDK
                 var request = new HttpRequestMessage()
                 {
                     Method = HttpMethod.Delete,
-                    RequestUri = new Uri(API_VERSION + "/deleteImage"),
+                    RequestUri = new Uri(BASE_ADDRESS+"/"+API_VERSION + "/deleteImage"),
                     Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.Default, "application/json")
                 };
 
@@ -232,7 +233,7 @@ namespace image4ioDotNetSDK
                 var request = new HttpRequestMessage()
                 {
                     Method = HttpMethod.Delete,
-                    RequestUri = new Uri(API_VERSION + "/deleteFolder"),
+                    RequestUri = new Uri(BASE_ADDRESS+"/"+API_VERSION + "/deleteFolder"),
                     Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.Default, "application/json")
                 };
 
@@ -359,7 +360,7 @@ namespace image4ioDotNetSDK
                 var request = new HttpRequestMessage()
                 {
                     Method = HttpMethod.Get,
-                    RequestUri = new Uri(API_VERSION + "/streams"),
+                    RequestUri = new Uri(BASE_ADDRESS+"/"+API_VERSION + "/streams"),
                     Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.Default, "application/json")
                 };
 
@@ -383,7 +384,7 @@ namespace image4ioDotNetSDK
                 var request = new HttpRequestMessage()
                 {
                     Method = HttpMethod.Delete,
-                    RequestUri = new Uri(API_VERSION + "/deleteStream"),
+                    RequestUri = new Uri(BASE_ADDRESS+"/"+API_VERSION + "/deleteStream"),
                     Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.Default, "application/json")
                 };
 

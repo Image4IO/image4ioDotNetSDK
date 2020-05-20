@@ -1,11 +1,8 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace image4ioDotNetSDK.Models
 {
-   public class FetchImageRequest
+    public class FetchImageRequest
     {
         [JsonProperty("from")]
         public string From { get; set; }
