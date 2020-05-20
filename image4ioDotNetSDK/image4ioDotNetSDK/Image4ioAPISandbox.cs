@@ -135,12 +135,12 @@ namespace image4ioDotNetSDK
             throw new NotImplementedException();
         }
 
-        public UploadImageResponse Upload(UploadImageRequest model)
+        public UploadImageResponse UploadImage(UploadImageRequest model)
         {
             throw new NotImplementedException();
         }
 
-        public Task<UploadImageResponse> UploadAsync(UploadImageRequest model)
+        public Task<UploadImageResponse> UploadImageAsync(UploadImageRequest model)
         {
             throw new NotImplementedException();
         }

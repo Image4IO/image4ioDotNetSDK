@@ -7,8 +7,8 @@ namespace image4ioDotNetSDK
 {
     public interface IImage4ioAPI
     {
-        UploadImageResponse Upload(UploadImageRequest model);
-        Task<UploadImageResponse> UploadAsync(UploadImageRequest model);
+        UploadImageResponse UploadImage(UploadImageRequest model);
+        Task<UploadImageResponse> UploadImageAsync(UploadImageRequest model);
         ImagesResponse GetImages(ImagesRequest model);
         Task<ImagesResponse> GetImagesAsync(ImagesRequest model);
         CreateFolderResponse CreateFolder(CreateFolderRequest model);
@@ -37,6 +37,8 @@ namespace image4ioDotNetSDK
         Task<StreamsResponse> GetStreamsAsync(StreamsRequest request);
         DeleteStreamResponse DeleteStream(DeleteStreamRequest request);
         Task<DeleteStreamResponse> DeleteStreamAsync(DeleteStreamRequest request);
+        FetchStreamResponse FetchStream(FetchStreamRequest model);
+        Task<FetchStreamResponse> FetchStreamAsync(FetchStreamRequest model);
         #endregion
     }
 }
