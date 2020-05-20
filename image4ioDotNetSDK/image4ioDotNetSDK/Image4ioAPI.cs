@@ -47,9 +47,9 @@ namespace image4ioDotNetSDK
         }
 
 
-        public UploadImageResponse Upload(UploadImageRequest model) => UploadAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+        public UploadImageResponse UploadImage(UploadImageRequest model) => UploadImageAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
 
-        public async Task<UploadImageResponse> UploadAsync(UploadImageRequest model)
+        public async Task<UploadImageResponse> UploadImageAsync(UploadImageRequest model)
         {
             try
             {
@@ -400,6 +400,28 @@ namespace image4ioDotNetSDK
                 throw ex;
             }
         }
+        public FetchStreamResponse FetchStream(FetchStreamRequest model) => FetchStreamAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+
+        public async Task<FetchStreamResponse> FetchStreamAsync(FetchStreamRequest model)
+        {
+            try
+            {
+                string json = JsonConvert.SerializeObject(model);
+                StringContent stringContent = new StringContent(json, Encoding.Default, "application/json");
+
+                var result = await client.PostAsync(API_VERSION + "/fetchStream", stringContent);
+                var jsonResponse = await result.Content.ReadAsStringAsync();
+                var response = JsonConvert.DeserializeObject<FetchStreamResponse>(jsonResponse);
+
+                return response;
+            }
+            catch (Exception e)
+            {
+                var ex = new Image4ioException("There is an error while fetching an stream", e);
+                throw ex;
+            }
+        }
+
         #endregion
     }
 }
