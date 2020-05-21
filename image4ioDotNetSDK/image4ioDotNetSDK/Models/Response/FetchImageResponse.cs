@@ -30,6 +30,8 @@ namespace image4ioDotNetSDK.Models
             public int Height { get; set; }
             [JsonProperty(PropertyName = "createdAtUTC")]
             public DateTime CreatedAtUTC { get; set; }
+            [JsonProperty(PropertyName = "updatedAtUTC")]
+            public DateTime UpdatedAtUTC { get; set; }
             [JsonProperty(PropertyName = "status")]
             public string Status { get; set; }
         }

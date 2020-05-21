@@ -29,8 +29,8 @@ namespace image4ioDotNetSDK
         #region Stream
         StartUploadStreamResponse StartUploadStream(StartUploadStreamRequest request);
         Task<StartUploadStreamResponse> StartUploadStreamAsync(StartUploadStreamRequest request);
-        void UploadStreamPart(UploadStreamPartRequest request);
-        Task UploadStreamPartAsync(UploadStreamPartRequest request);
+        BaseResponse UploadStreamPart(UploadStreamPartRequest request);
+        Task<BaseResponse> UploadStreamPartAsync(UploadStreamPartRequest request);
         FinalizeStreamResponse FinalizeStream(FinalizeStreamRequest request);
         Task<FinalizeStreamResponse> FinalizeStreamAsync(FinalizeStreamRequest request);
         StreamsResponse GetStreams(StreamsRequest request);

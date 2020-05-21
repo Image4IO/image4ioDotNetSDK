@@ -9,28 +9,29 @@ namespace image4ioDotNetSDK.Models
 {
    public class ImagesResponse : BaseResponse
     {
-        [JsonProperty("name")]
-        public string Name { get; set; }
+        public List<Image> Images { get; set; } = new List<Image>();
 
-        [JsonProperty("userGivenName")]
-        public string UserGivenName { get; set; }
+        public class Image
+        {
+            public string Name { get; set; }
 
-        [JsonProperty("size")]
-        public Int64 Size { get; set; }
+            public string UserGivenName { get; set; }
 
-        [JsonProperty("format")]
-        public string Format { get; set; }
+            public Int64 Size { get; set; }
 
-        [JsonProperty("width")]
-        public int Width { get; set; }
+            public string Format { get; set; }
 
-        [JsonProperty("height")]
-        public int Height { get; set; }
+            public string Url { get; set; }
 
-        [JsonProperty("createdAtUTC")]
-        public DateTime CreatedAtUTC { get; set; }
+            public string ImagePath { get; set; }
 
-        [JsonProperty("updatedAtUTC")]
-        public DateTime UpdatedAtUTC { get; set; }
+            public int Width { get; set; }
+
+            public int Height { get; set; }
+
+            public DateTime CreatedAtUTC { get; set; }
+
+            public DateTime UpdatedAtUTC { get; set; }
+        }
     }
 }

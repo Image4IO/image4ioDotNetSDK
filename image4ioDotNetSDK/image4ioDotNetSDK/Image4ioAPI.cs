@@ -4,6 +4,8 @@ using image4ioDotNetSDK.Models.Request;
 using image4ioDotNetSDK.Models.Response;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,7 +14,7 @@ namespace image4ioDotNetSDK
 {
     public class Image4ioAPI : IImage4ioAPI
     {
-        private static readonly HttpClient client = new HttpClient();
+        private static HttpClient client;
         private readonly string API_VERSION = "v1.0";
         private readonly string BASE_ADDRESS = "https://api.image4.io";
 
@@ -20,6 +22,19 @@ namespace image4ioDotNetSDK
         {
             if (client == null || client.BaseAddress == null)
             {
+                client = new HttpClient();
+                client.BaseAddress = new Uri(BASE_ADDRESS);
+
+                var byteArray = Encoding.ASCII.GetBytes(APIKey + ":" + APISecret);
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+            }
+        }
+
+        public Image4ioAPI(string APIKey, string APISecret, HttpMessageHandler handler)
+        {
+            if (client == null || client.BaseAddress == null)
+            {
+                client = new HttpClient(handler);
                 client.BaseAddress = new Uri(BASE_ADDRESS);
 
                 var byteArray = Encoding.ASCII.GetBytes(APIKey + ":" + APISecret);
@@ -296,9 +311,9 @@ namespace image4ioDotNetSDK
             }
         }
 
-        public void UploadStreamPart(UploadStreamPartRequest model) => UploadStreamPartAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+        public BaseResponse UploadStreamPart(UploadStreamPartRequest model) => UploadStreamPartAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
 
-        public async Task UploadStreamPartAsync(UploadStreamPartRequest model)
+        public async Task<BaseResponse> UploadStreamPartAsync(UploadStreamPartRequest model)
         {
             try
             {
@@ -319,7 +334,18 @@ namespace image4ioDotNetSDK
                 var result = await client.SendAsync(request);
                 if (!result.IsSuccessStatusCode)
                 {
-                    throw new Exception("");
+                    var jsonResponse = await result.Content.ReadAsStringAsync();
+                    var response = JsonConvert.DeserializeObject<BaseResponse>(jsonResponse);
+                    return response;
+                }
+                else
+                {
+                    return new BaseResponse
+                    {
+                        Errors = new List<string>(),
+                        Messages = new List<string>(),
+                        Success = true
+                    };
                 }
 
             }
