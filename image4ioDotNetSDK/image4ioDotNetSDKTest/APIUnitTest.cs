@@ -21,17 +21,23 @@ namespace image4ioDotNetSDKTest
     public class APIUnitTest : IDisposable
     {
 
-        private Image4ioAPI SUT;
+        private static Image4ioAPI SUT;
 
-        private Mock<HttpMessageHandler> messageHandlerMock;
+        private static Mock<HttpMessageHandler> messageHandlerMock;
 
         private readonly string API_VERSION = "v1.0";
         private readonly string BASE_ADDRESS = "https://api.image4.io/";
 
         public APIUnitTest()
         {
-            messageHandlerMock = new Mock<HttpMessageHandler>();
-            SUT = new Image4ioAPI("apiKey", "apiSecret", messageHandlerMock.Object);
+            if (messageHandlerMock == null)
+            {
+                messageHandlerMock = new Mock<HttpMessageHandler>();
+            }
+            if (SUT == null)
+            {
+                SUT = new Image4ioAPI("apiKey", "apiSecret", messageHandlerMock.Object);
+            }
         }
 
         [Fact]
@@ -39,7 +45,7 @@ namespace image4ioDotNetSDKTest
         {
             //Arrange
             messageHandlerMock.Protected()
-               .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(x => 
+               .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(x =>
                    x.RequestUri.ToString() == BASE_ADDRESS + API_VERSION + "/subscription"), ItExpr.IsAny<CancellationToken>())
                .ReturnsAsync(new HttpResponseMessage
                {
@@ -84,7 +90,7 @@ namespace image4ioDotNetSDKTest
                    Content = new StringContent(JsonConvert.SerializeObject(MockResponses.ReturnGetImageResponse()), Encoding.Default, "application/json")
                });
             //Act
-            var result = await SUT.GetImagesAsync(new ImagesRequest() { Names=new List<string>() });
+            var result = await SUT.GetImagesAsync(new ImagesRequest() { Names = new List<string>() });
             //Assert
             Assert.IsType<ImagesResponse>(result);
         }
@@ -102,7 +108,7 @@ namespace image4ioDotNetSDKTest
                    Content = new StringContent(JsonConvert.SerializeObject(MockResponses.ReturnCreateFolderResponse()), Encoding.Default, "application/json")
                });
             //Act
-            var result = await SUT.CreateFolderAsync(new CreateFolderRequest() {Path="/test" });
+            var result = await SUT.CreateFolderAsync(new CreateFolderRequest() { Path = "/test" });
             //Assert
             Assert.IsType<CreateFolderResponse>(result);
         }
@@ -174,7 +180,7 @@ namespace image4ioDotNetSDKTest
                    Content = new StringContent(JsonConvert.SerializeObject(MockResponses.ReturnDeleteFolderResponse()), Encoding.Default, "application/json")
                });
             //Act
-            var result = await SUT.DeleteFolderAsync(new DeleteFolderRequest() { Path="/folderName/"});
+            var result = await SUT.DeleteFolderAsync(new DeleteFolderRequest() { Path = "/folderName/" });
             //Assert
             Assert.IsType<DeleteFolderResponse>(result);
         }
@@ -210,7 +216,7 @@ namespace image4ioDotNetSDKTest
                    Content = new StringContent(JsonConvert.SerializeObject(MockResponses.ReturnFetchImageResponse()), Encoding.Default, "application/json")
                });
             //Act
-            var result = await SUT.FetchImageAsync(new FetchImageRequest() {From="http://example.com/img.png",TargetPath="/",UseFilename=true});
+            var result = await SUT.FetchImageAsync(new FetchImageRequest() { From = "http://example.com/img.png", TargetPath = "/", UseFilename = true });
             //Assert
             Assert.IsType<FetchImageResponse>(result);
         }
@@ -228,7 +234,7 @@ namespace image4ioDotNetSDKTest
                    Content = new StringContent(JsonConvert.SerializeObject(MockResponses.ReturnStartUploadStreamResponse()), Encoding.Default, "application/json")
                });
             //Act
-            var result = await SUT.StartUploadStreamAsync(new StartUploadStreamRequest() { Path = "/", FileName="filename.mp4" });
+            var result = await SUT.StartUploadStreamAsync(new StartUploadStreamRequest() { Path = "/", FileName = "filename.mp4" });
             //Assert
             Assert.IsType<StartUploadStreamResponse>(result);
         }
@@ -263,7 +269,7 @@ namespace image4ioDotNetSDKTest
                    Content = new StringContent(JsonConvert.SerializeObject(MockResponses.ReturnFinalizeStreamResponse()), Encoding.Default, "application/json")
                });
             //Act
-            var result = await SUT.FinalizeStreamAsync(new FinalizeStreamRequest() { FileName="/filename.mp4",Token="uploadToken"});
+            var result = await SUT.FinalizeStreamAsync(new FinalizeStreamRequest() { FileName = "/filename.mp4", Token = "uploadToken" });
             //Assert
             Assert.IsType<FinalizeStreamResponse>(result);
         }
@@ -299,7 +305,7 @@ namespace image4ioDotNetSDKTest
                    Content = new StringContent(JsonConvert.SerializeObject(MockResponses.ReturnDeleteStreamResponse()), Encoding.Default, "application/json")
                });
             //Act
-            var result = await SUT.DeleteStreamAsync(new DeleteStreamRequest() { Name = "/4afdcb21ef149f06309573734e6d9515" } );
+            var result = await SUT.DeleteStreamAsync(new DeleteStreamRequest() { Name = "/4afdcb21ef149f06309573734e6d9515" });
             //Assert
             Assert.IsType<DeleteStreamResponse>(result);
         }
@@ -317,15 +323,13 @@ namespace image4ioDotNetSDKTest
                    Content = new StringContent(JsonConvert.SerializeObject(MockResponses.ReturnFetchStreamResponse()), Encoding.Default, "application/json")
                });
             //Act
-            var result = await SUT.FetchStreamAsync(new FetchStreamRequest() { From = "http://example.com/img.png", TargetPath = "/", Filename = "name-of-stream.mp4"});
+            var result = await SUT.FetchStreamAsync(new FetchStreamRequest() { From = "http://example.com/img.png", TargetPath = "/", Filename = "name-of-stream.mp4" });
             //Assert
             Assert.IsType<FetchStreamResponse>(result);
         }
 
         public void Dispose()
         {
-            messageHandlerMock = null;
-            SUT = null;
         }
     }
 }
