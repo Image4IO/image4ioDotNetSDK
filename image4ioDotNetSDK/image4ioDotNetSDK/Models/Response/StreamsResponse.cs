@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace image4ioDotNetSDK.Models.Response
 {
-    public class StreamsResponse : BaseResponse
+    public class StreamResponse : BaseResponse
     {
         public List<Stream> Streams { get; set; } = new List<Stream>();
 

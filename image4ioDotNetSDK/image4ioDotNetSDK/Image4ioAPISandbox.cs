@@ -95,22 +95,22 @@ namespace image4ioDotNetSDK
             throw new NotImplementedException();
         }
 
-        public ImagesResponse GetImages(ImagesRequest model)
+        public ImageResponse GetImage(ImageRequest model)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ImagesResponse> GetImagesAsync(ImagesRequest model)
+        public Task<ImageResponse> GetImageAsync(ImageRequest model)
         {
             throw new NotImplementedException();
         }
 
-        public StreamsResponse GetStreams(StreamsRequest request)
+        public StreamResponse GetStream(StreamRequest request)
         {
             throw new NotImplementedException();
         }
 
-        public Task<StreamsResponse> GetStreamsAsync(StreamsRequest request)
+        public Task<StreamResponse> GetStreamAsync(StreamRequest request)
         {
             throw new NotImplementedException();
         }

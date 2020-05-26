@@ -50,13 +50,13 @@ namespace image4ioDotNetSDKTest
             };
         }
 
-        public static ImagesResponse ReturnGetImageResponse()
+        public static ImageResponse ReturnGetImageResponse()
         {
-            return new ImagesResponse()
+            return new ImageResponse()
             {
-                Images = new List<ImagesResponse.Image>
+                Images = new List<ImageResponse.Image>
                 {
-                   new ImagesResponse.Image
+                   new ImageResponse.Image
                    {
                         Name= "/name-of-the-image.png",
                         UserGivenName= "name-of-the-image.png",
@@ -290,13 +290,13 @@ namespace image4ioDotNetSDKTest
             };
         }
 
-        public static StreamsResponse ReturnGetStreamResponse()
+        public static StreamResponse ReturnGetStreamResponse()
         {
-            return new StreamsResponse
+            return new StreamResponse
             {
-                Streams = new List<StreamsResponse.Stream>
+                Streams = new List<StreamResponse.Stream>
                 {
-                    new StreamsResponse.Stream
+                    new StreamResponse.Stream
                     {
                         OrginalName = "name-of-the-stream.mp4",
                         Name = "/4afdcb21ef149f06309573734e6d9515",

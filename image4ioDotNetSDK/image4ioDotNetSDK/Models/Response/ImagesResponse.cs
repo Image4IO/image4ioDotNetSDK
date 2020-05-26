@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace image4ioDotNetSDK.Models
 {
-   public class ImagesResponse : BaseResponse
+   public class ImageResponse : BaseResponse
     {
         public List<Image> Images { get; set; } = new List<Image>();
 

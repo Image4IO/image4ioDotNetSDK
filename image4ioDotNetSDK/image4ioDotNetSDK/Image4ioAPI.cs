@@ -2,6 +2,8 @@
 using image4ioDotNetSDK.Models.Exception;
 using image4ioDotNetSDK.Models.Request;
 using image4ioDotNetSDK.Models.Response;
+using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -93,32 +95,30 @@ namespace image4ioDotNetSDK
         }
 
 
-        public ImagesResponse GetImages(ImagesRequest model) => GetImagesAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+        public ImageResponse GetImage(ImageRequest model) => GetImageAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
 
-        public async Task<ImagesResponse> GetImagesAsync(ImagesRequest model)
+        public async Task<ImageResponse> GetImageAsync(ImageRequest model)
         {
             try
             {
                 var request = new HttpRequestMessage()
                 {
                     Method = HttpMethod.Get,
-                    RequestUri = new Uri(BASE_ADDRESS+"/"+API_VERSION + "/images"),
-                    Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.Default, "application/json")
+                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/image?name=" + model.Name),
                 };
 
                 var result = await client.SendAsync(request);
                 var jsonResponse = await result.Content.ReadAsStringAsync();
-                var response = JsonConvert.DeserializeObject<ImagesResponse>(jsonResponse);
+                var response = JsonConvert.DeserializeObject<ImageResponse>(jsonResponse);
 
                 return response;
             }
             catch (Exception e)
             {
-                var ex = new Image4ioException("There is an error while getting image(s)", e);
+                var ex = new Image4ioException("There is an error while getting image", e);
                 throw ex;
             }
         }
-
 
         public CreateFolderResponse CreateFolder(CreateFolderRequest model) => CreateFolderAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
 
@@ -193,13 +193,15 @@ namespace image4ioDotNetSDK
         {
             try
             {
+                var queryBuilder = new QueryBuilder();
+                queryBuilder.Add("path", model.Path);
+                queryBuilder.Add("continuationToken", model.ContinuationToken);
+
                 var request = new HttpRequestMessage()
                 {
                     Method = HttpMethod.Get,
-                    RequestUri = new Uri(BASE_ADDRESS+"/"+API_VERSION + "/listFolder"),
-                    Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.Default, "application/json")
+                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/listFolder" + queryBuilder.ToQueryString()),
                 };
-
                 var result = await client.SendAsync(request);
                 var jsonResponse = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<ListFolderResponse>(jsonResponse);
@@ -222,7 +224,7 @@ namespace image4ioDotNetSDK
                 var request = new HttpRequestMessage()
                 {
                     Method = HttpMethod.Delete,
-                    RequestUri = new Uri(BASE_ADDRESS+"/"+API_VERSION + "/deleteImage"),
+                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/deleteImage"),
                     Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.Default, "application/json")
                 };
 
@@ -248,7 +250,7 @@ namespace image4ioDotNetSDK
                 var request = new HttpRequestMessage()
                 {
                     Method = HttpMethod.Delete,
-                    RequestUri = new Uri(BASE_ADDRESS+"/"+API_VERSION + "/deleteFolder"),
+                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/deleteFolder"),
                     Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.Default, "application/json")
                 };
 
@@ -264,7 +266,6 @@ namespace image4ioDotNetSDK
                 throw ex;
             }
         }
-
 
         public FetchImageResponse FetchImage(FetchImageRequest model) => FetchImageAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
 
@@ -378,31 +379,33 @@ namespace image4ioDotNetSDK
             }
         }
 
-        public StreamsResponse GetStreams(StreamsRequest model) => GetStreamsAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
-        public async Task<StreamsResponse> GetStreamsAsync(StreamsRequest model)
+        public StreamResponse GetStream(StreamRequest model) => GetStreamAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+
+        public async Task<StreamResponse> GetStreamAsync(StreamRequest model)
         {
             try
             {
                 var request = new HttpRequestMessage()
                 {
                     Method = HttpMethod.Get,
-                    RequestUri = new Uri(BASE_ADDRESS+"/"+API_VERSION + "/streams"),
-                    Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.Default, "application/json")
+                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/stream?name=" + model.Name),
                 };
 
                 var result = await client.SendAsync(request);
                 var jsonResponse = await result.Content.ReadAsStringAsync();
-                var response = JsonConvert.DeserializeObject<StreamsResponse>(jsonResponse);
+                var response = JsonConvert.DeserializeObject<StreamResponse>(jsonResponse);
 
                 return response;
             }
             catch (Exception e)
             {
-                var ex = new Image4ioException("There is an error while getting stream(s)", e);
+                var ex = new Image4ioException("There is an error while getting stream", e);
                 throw ex;
             }
         }
+
         public DeleteStreamResponse DeleteStream(DeleteStreamRequest model) => DeleteStreamAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+
         public async Task<DeleteStreamResponse> DeleteStreamAsync(DeleteStreamRequest model)
         {
             try
@@ -410,7 +413,7 @@ namespace image4ioDotNetSDK
                 var request = new HttpRequestMessage()
                 {
                     Method = HttpMethod.Delete,
-                    RequestUri = new Uri(BASE_ADDRESS+"/"+API_VERSION + "/deleteStream"),
+                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/deleteStream"),
                     Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.Default, "application/json")
                 };
 
@@ -426,6 +429,7 @@ namespace image4ioDotNetSDK
                 throw ex;
             }
         }
+
         public FetchStreamResponse FetchStream(FetchStreamRequest model) => FetchStreamAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
 
         public async Task<FetchStreamResponse> FetchStreamAsync(FetchStreamRequest model)

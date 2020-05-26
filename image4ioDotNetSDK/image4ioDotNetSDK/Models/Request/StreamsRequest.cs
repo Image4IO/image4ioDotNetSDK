@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace image4ioDotNetSDK.Models.Request
 {
-    public class StreamsRequest
+    public class StreamRequest
     {
-        [JsonProperty("names")]
-        public List<string> Names { get; set; }
+        [JsonProperty("name")]
+        public string Name { get; set; }
     }
 }

@@ -9,8 +9,8 @@ namespace image4ioDotNetSDK
     {
         UploadImageResponse UploadImage(UploadImageRequest model);
         Task<UploadImageResponse> UploadImageAsync(UploadImageRequest model);
-        ImagesResponse GetImages(ImagesRequest model);
-        Task<ImagesResponse> GetImagesAsync(ImagesRequest model);
+        ImageResponse GetImage(ImageRequest model);
+        Task<ImageResponse> GetImageAsync(ImageRequest model);
         CreateFolderResponse CreateFolder(CreateFolderRequest model);
         Task<CreateFolderResponse> CreateFolderAsync(CreateFolderRequest model);
         CopyImageResponse CopyImage(CopyImageRequest model);
@@ -33,8 +33,8 @@ namespace image4ioDotNetSDK
         Task<BaseResponse> UploadStreamPartAsync(UploadStreamPartRequest request);
         FinalizeStreamResponse FinalizeStream(FinalizeStreamRequest request);
         Task<FinalizeStreamResponse> FinalizeStreamAsync(FinalizeStreamRequest request);
-        StreamsResponse GetStreams(StreamsRequest request);
-        Task<StreamsResponse> GetStreamsAsync(StreamsRequest request);
+        StreamResponse GetStream(StreamRequest request);
+        Task<StreamResponse> GetStreamAsync(StreamRequest request);
         DeleteStreamResponse DeleteStream(DeleteStreamRequest request);
         Task<DeleteStreamResponse> DeleteStreamAsync(DeleteStreamRequest request);
         FetchStreamResponse FetchStream(FetchStreamRequest model);
