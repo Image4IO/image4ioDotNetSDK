@@ -9,9 +9,9 @@ namespace image4ioDotNetSDK.Models.Response
 {
     public class StreamResponse : BaseResponse
     {
-        public List<Stream> Streams { get; set; } = new List<Stream>();
+        public StreamFile Stream { get; set; }
 
-        public class Stream
+        public class StreamFile
         {
             [JsonProperty(PropertyName = "folder")]
             public string Folder { get; set; }

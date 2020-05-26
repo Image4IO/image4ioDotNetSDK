@@ -9,9 +9,9 @@ namespace image4ioDotNetSDK.Models
 {
    public class ImageResponse : BaseResponse
     {
-        public List<Image> Images { get; set; } = new List<Image>();
+        public ImageFile Image { get; set; }
 
-        public class Image
+        public class ImageFile
         {
             public string Name { get; set; }
 
