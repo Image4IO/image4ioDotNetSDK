@@ -54,21 +54,18 @@ namespace image4ioDotNetSDKTest
         {
             return new ImageResponse()
             {
-                Images = new List<ImageResponse.Image>
+                Image = new ImageResponse.ImageFile
                 {
-                   new ImageResponse.Image
-                   {
-                        Name= "/name-of-the-image.png",
-                        UserGivenName= "name-of-the-image.png",
-                        Size= 388,
-                        Format= "png",
-                        Url= "https=//cdn.image4.io/cloudname/name-of-the-image.png",
-                        ImagePath= "/cloudname/name-of-the-image.png",
-                        Width= 72,
-                        Height= 72,
-                        CreatedAtUTC= DateTime.UtcNow,
-                        UpdatedAtUTC= DateTime.UtcNow
-                    }
+                    Name = "/name-of-the-image.png",
+                    UserGivenName = "name-of-the-image.png",
+                    Size = 388,
+                    Format = "png",
+                    Url = "https=//cdn.image4.io/cloudname/name-of-the-image.png",
+                    ImagePath = "/cloudname/name-of-the-image.png",
+                    Width = 72,
+                    Height = 72,
+                    CreatedAtUTC = DateTime.UtcNow,
+                    UpdatedAtUTC = DateTime.UtcNow
                 },
                 Success = true,
                 Errors = new List<string>(),
@@ -294,25 +291,22 @@ namespace image4ioDotNetSDKTest
         {
             return new StreamResponse
             {
-                Streams = new List<StreamResponse.Stream>
+                Stream = new StreamResponse.StreamFile
                 {
-                    new StreamResponse.Stream
-                    {
-                        OrginalName = "name-of-the-stream.mp4",
-                        Name = "/4afdcb21ef149f06309573734e6d9515",
-                        Format = "mp4",
-                        Width = 1280,
-                        Height = 720,
-                        CreatedAtUTC = DateTime.UtcNow,
-                        UpdatedAtUTC = DateTime.UtcNow,
-                        ThumbnailUrl = "https=//watch.image4.io/cloudname/4afdcb21ef149f06309573734e6d9515/thumbnails/thumbnail.jpg",
-                        PreviewUrl = "https=//watch.image4.io/cloudname/4afdcb21ef149f06309573734e6d9515",
-                        HlsPlayback = "https=//cdn.image4.io/cloudname/4afdcb21ef149f06309573734e6d9515/manifest/video.m3u8",
-                        Duration = 10.0,
-                        ReadyToStream = false,
-                        Folder="/",
-                        Size=123456
-                    }
+                    OrginalName = "name-of-the-stream.mp4",
+                    Name = "/4afdcb21ef149f06309573734e6d9515",
+                    Format = "mp4",
+                    Width = 1280,
+                    Height = 720,
+                    CreatedAtUTC = DateTime.UtcNow,
+                    UpdatedAtUTC = DateTime.UtcNow,
+                    ThumbnailUrl = "https=//watch.image4.io/cloudname/4afdcb21ef149f06309573734e6d9515/thumbnails/thumbnail.jpg",
+                    PreviewUrl = "https=//watch.image4.io/cloudname/4afdcb21ef149f06309573734e6d9515",
+                    HlsPlayback = "https=//cdn.image4.io/cloudname/4afdcb21ef149f06309573734e6d9515/manifest/video.m3u8",
+                    Duration = 10.0,
+                    ReadyToStream = false,
+                    Folder = "/",
+                    Size = 123456
                 }
             };
         }
