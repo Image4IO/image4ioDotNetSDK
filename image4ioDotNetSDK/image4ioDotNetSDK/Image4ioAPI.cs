@@ -194,8 +194,14 @@ namespace image4ioDotNetSDK
             try
             {
                 var queryBuilder = new QueryBuilder();
-                queryBuilder.Add("path", model.Path);
-                queryBuilder.Add("continuationToken", model.ContinuationToken);
+                if (!String.IsNullOrEmpty(model.Path))
+                {
+                    queryBuilder.Add("path", model.Path);
+                }
+                if (!String.IsNullOrEmpty(model.ContinuationToken))
+                {
+                    queryBuilder.Add("continuationToken", model.ContinuationToken);
+                }
 
                 var request = new HttpRequestMessage()
                 {
