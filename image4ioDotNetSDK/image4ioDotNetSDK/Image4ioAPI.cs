@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -51,9 +52,17 @@ namespace image4ioDotNetSDK
             try
             {
                 var result = await client.GetAsync(API_VERSION + "/subscription");
+                if (result.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    return new SubscriptionResponse
+                    {
+                        Success = false,
+                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
+                    };
+                }
                 var jsonResponse = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<SubscriptionResponse>(jsonResponse);
-
+                
                 return response;
             }
             catch (Exception e)
@@ -82,6 +91,14 @@ namespace image4ioDotNetSDK
                 }
 
                 var result = await client.PostAsync(API_VERSION + "/uploadImage", form);
+                if (result.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    return new UploadImageResponse
+                    {
+                        Success = false,
+                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
+                    };
+                }
                 var jsonResponse = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<UploadImageResponse>(jsonResponse);
 
@@ -108,6 +125,14 @@ namespace image4ioDotNetSDK
                 };
 
                 var result = await client.SendAsync(request);
+                if (result.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    return new ImageResponse
+                    {
+                        Success = false,
+                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
+                    };
+                }
                 var jsonResponse = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<ImageResponse>(jsonResponse);
 
@@ -130,6 +155,14 @@ namespace image4ioDotNetSDK
                 StringContent stringContent = new StringContent(json, Encoding.Default, "application/json");
 
                 var result = await client.PostAsync(API_VERSION + "/createFolder", stringContent);
+                if (result.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    return new CreateFolderResponse
+                    {
+                        Success = false,
+                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
+                    };
+                }
                 var jsonResponse = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<CreateFolderResponse>(jsonResponse);
 
@@ -152,6 +185,14 @@ namespace image4ioDotNetSDK
                 StringContent stringContent = new StringContent(json, Encoding.Default, "application/json");
 
                 var result = await client.PutAsync(API_VERSION + "/copyImage", stringContent);
+                if (result.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    return new CopyImageResponse
+                    {
+                        Success = false,
+                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
+                    };
+                }
                 var jsonResponse = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<CopyImageResponse>(jsonResponse);
 
@@ -174,6 +215,14 @@ namespace image4ioDotNetSDK
                 StringContent stringContent = new StringContent(json, Encoding.Default, "application/json");
 
                 var result = await client.PutAsync(API_VERSION + "/moveImage", stringContent);
+                if (result.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    return new MoveImageResponse
+                    {
+                        Success = false,
+                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
+                    };
+                }
                 var jsonResponse = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<MoveImageResponse>(jsonResponse);
 
@@ -209,6 +258,14 @@ namespace image4ioDotNetSDK
                     RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/listFolder" + queryBuilder.ToQueryString()),
                 };
                 var result = await client.SendAsync(request);
+                if (result.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    return new ListFolderResponse
+                    {
+                        Success = false,
+                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
+                    };
+                }
                 var jsonResponse = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<ListFolderResponse>(jsonResponse);
 
@@ -235,6 +292,14 @@ namespace image4ioDotNetSDK
                 };
 
                 var result = await client.SendAsync(request);
+                if (result.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    return new DeleteImageResponse
+                    {
+                        Success = false,
+                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
+                    };
+                }
                 var jsonResponse = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<DeleteImageResponse>(jsonResponse);
 
@@ -261,6 +326,14 @@ namespace image4ioDotNetSDK
                 };
 
                 var result = await client.SendAsync(request);
+                if (result.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    return new DeleteFolderResponse
+                    {
+                        Success = false,
+                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
+                    };
+                }
                 var jsonResponse = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<DeleteFolderResponse>(jsonResponse);
 
@@ -283,6 +356,14 @@ namespace image4ioDotNetSDK
                 StringContent stringContent = new StringContent(json, Encoding.Default, "application/json");
 
                 var result = await client.PostAsync(API_VERSION + "/fetchImage", stringContent);
+                if (result.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    return new FetchImageResponse
+                    {
+                        Success = false,
+                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
+                    };
+                }
                 var jsonResponse = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<FetchImageResponse>(jsonResponse);
 
@@ -306,6 +387,14 @@ namespace image4ioDotNetSDK
                 StringContent stringContent = new StringContent(json, Encoding.Default, "application/json");
 
                 var result = await client.PostAsync(API_VERSION + "/uploadStream", stringContent);
+                if (result.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    return new StartUploadStreamResponse
+                    {
+                        Success = false,
+                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
+                    };
+                }
                 var jsonResponse = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<StartUploadStreamResponse>(jsonResponse);
 
@@ -339,6 +428,14 @@ namespace image4ioDotNetSDK
                 };
 
                 var result = await client.SendAsync(request);
+                if (result.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    return new BaseResponse
+                    {
+                        Success = false,
+                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
+                    };
+                }
                 if (!result.IsSuccessStatusCode)
                 {
                     var jsonResponse = await result.Content.ReadAsStringAsync();
@@ -373,6 +470,14 @@ namespace image4ioDotNetSDK
                 StringContent stringContent = new StringContent(json, Encoding.Default, "application/json");
 
                 var result = await client.PostAsync(API_VERSION + "/finalizeStream", stringContent);
+                if (result.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    return new FinalizeStreamResponse
+                    {
+                        Success = false,
+                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
+                    };
+                }
                 var jsonResponse = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<FinalizeStreamResponse>(jsonResponse);
 
@@ -398,6 +503,14 @@ namespace image4ioDotNetSDK
                 };
 
                 var result = await client.SendAsync(request);
+                if (result.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    return new StreamResponse
+                    {
+                        Success = false,
+                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
+                    };
+                }
                 var jsonResponse = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<StreamResponse>(jsonResponse);
 
@@ -424,6 +537,14 @@ namespace image4ioDotNetSDK
                 };
 
                 var result = await client.SendAsync(request);
+                if (result.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    return new DeleteStreamResponse
+                    {
+                        Success = false,
+                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
+                    };
+                }
                 var jsonResponse = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<DeleteStreamResponse>(jsonResponse);
 
@@ -446,6 +567,14 @@ namespace image4ioDotNetSDK
                 StringContent stringContent = new StringContent(json, Encoding.Default, "application/json");
 
                 var result = await client.PostAsync(API_VERSION + "/fetchStream", stringContent);
+                if (result.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    return new FetchStreamResponse
+                    {
+                        Success = false,
+                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
+                    };
+                }
                 var jsonResponse = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<FetchStreamResponse>(jsonResponse);
 
