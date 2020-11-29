@@ -25,6 +25,8 @@ namespace image4ioDotNetSDK
         Task<DeleteFolderResponse> DeleteFolderAsync(DeleteFolderRequest model);
         FetchImageResponse FetchImage(FetchImageRequest model);
         Task<FetchImageResponse> FetchImageAsync(FetchImageRequest model);
+        PurgeResponse Purge();
+        Task<PurgeResponse> PurgeAsync();
 
         #region Stream
         StartUploadStreamResponse StartUploadStream(StartUploadStreamRequest request);

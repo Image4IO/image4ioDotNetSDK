@@ -376,6 +376,33 @@ namespace image4ioDotNetSDK
             }
         }
 
+        public PurgeResponse Purge() => PurgeAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+
+        public async Task<PurgeResponse> PurgeAsync()
+        {
+            try
+            {
+                var result = await client.DeleteAsync(API_VERSION + "/purge");
+                if (result.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    return new PurgeResponse
+                    {
+                        Success = false,
+                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
+                    };
+                }
+                var jsonResponse = await result.Content.ReadAsStringAsync();
+                var response = JsonConvert.DeserializeObject<PurgeResponse>(jsonResponse);
+
+                return response;
+            }
+            catch (Exception e)
+            {
+                var ex = new Image4ioException("There is an error while purging the files from CDN", e);
+                throw ex;
+            }
+        }
+
         #region Streams
         public StartUploadStreamResponse StartUploadStream(StartUploadStreamRequest model) => StartUploadStreamAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
 
