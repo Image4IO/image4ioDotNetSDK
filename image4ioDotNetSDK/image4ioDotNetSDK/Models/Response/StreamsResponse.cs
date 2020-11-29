@@ -40,6 +40,9 @@ namespace image4ioDotNetSDK.Models.Response
             [JsonProperty(PropertyName = "updatedAt")]
             public DateTime UpdatedAtUTC { get; set; }
 
+            [JsonProperty(PropertyName = "directUrl")]
+            public string DirectUrl { get; set; }
+
             [JsonProperty(PropertyName = "thumbnailUrl")]
             public string ThumbnailUrl { get; set; }
 

@@ -20,6 +20,8 @@ namespace image4ioDotNetSDK.Models.Response
 
             public string ThumbnailUrl { get; set; }
 
+            public string DirectUrl { get; set; }
+
             public bool ReadyToStream { get; set; }
 
             public string PreviewUrl { get; set; }
