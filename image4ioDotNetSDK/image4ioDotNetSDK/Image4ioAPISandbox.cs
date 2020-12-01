@@ -135,6 +135,16 @@ namespace image4ioDotNetSDK
             throw new NotImplementedException();
         }
 
+        public PurgeResponse Purge()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<PurgeResponse> PurgeAsync()
+        {
+            throw new NotImplementedException();
+        }
+
         public StartUploadStreamResponse StartUploadStream(StartUploadStreamRequest request)
         {
             throw new NotImplementedException();
