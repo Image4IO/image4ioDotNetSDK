@@ -8,35 +8,7 @@ namespace image4ioDotNetSDK.Models.Response
 {
     public class FetchStreamResponse : BaseResponse
     {
-        public File FetchedStream { get; set; }
+        public StreamResponse FetchedStream { get; set; }
 
-        public class File
-        {
-            public string Name { get; set; }
-
-            public string UserGivenName { get; set; }
-
-            public string Format { get; set; }
-
-            public string DirectUrl { get; set; }
-
-            public string ThumbnailUrl { get; set; }
-
-            public bool ReadyToStream { get; set; }
-
-            public string PreviewUrl { get; set; }
-
-            public string HlsPlayback { get; set; }
-
-            public double Duration { get; set; }
-
-            public int Width { get; set; }
-
-            public int Height { get; set; }
-
-            public DateTime CreatedAtUTC { get; set; }
-
-            public DateTime UpdatedAtUTC { get; set; }
-        }
     }
 }

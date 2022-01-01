@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,53 +18,60 @@ namespace image4ioDotNetSDK
 {
     public class Image4ioAPI : IImage4ioAPI
     {
-        private static HttpClient client;
-        private readonly string API_VERSION = "v1.0";
-        private readonly string BASE_ADDRESS = "https://api.image4.io";
+        private static HttpClient _client;
+        private readonly string API_VERSION = "v2.0";
+        private readonly string BASE_ADDRESS = "https://api.image4.io/";
+        private readonly AuthenticationHeaderValue _auth;
 
         public Image4ioAPI(string APIKey, string APISecret)
         {
-            if (client == null || client.BaseAddress == null)
+            if (_client == null || _client.BaseAddress == null)
             {
-                client = new HttpClient();
-                client.BaseAddress = new Uri(BASE_ADDRESS);
+                _client = new HttpClient();
 
                 var byteArray = Encoding.ASCII.GetBytes(APIKey + ":" + APISecret);
-                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+                _auth = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
             }
         }
 
         public Image4ioAPI(string APIKey, string APISecret, HttpMessageHandler handler)
         {
-            if (client == null || client.BaseAddress == null)
+            if (_client == null || _client.BaseAddress == null)
             {
-                client = new HttpClient(handler);
-                client.BaseAddress = new Uri(BASE_ADDRESS);
+                _client = new HttpClient(handler);
 
                 var byteArray = Encoding.ASCII.GetBytes(APIKey + ":" + APISecret);
-                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+                _auth = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
             }
         }
 
-        public SubscriptionResponse Subscription() => SubscriptionAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+        public Image4ioAPI(string APIKey, string APISecret, HttpClient httpClient)
+        {
+            _client = httpClient;
+            var byteArray = Encoding.ASCII.GetBytes(APIKey + ":" + APISecret);
+            _auth = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+        }
 
-        public async Task<SubscriptionResponse> SubscriptionAsync()
+        public async Task<SubscriptionResponse> Subscription()
         {
             try
             {
-                var result = await client.GetAsync(API_VERSION + "/subscription");
-                if (result.StatusCode == HttpStatusCode.Unauthorized)
+                var request = new HttpRequestMessage
                 {
-                    return new SubscriptionResponse
-                    {
-                        Success = false,
-                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
-                    };
-                }
+                    Method = HttpMethod.Get,
+                    RequestUri = new Uri(BASE_ADDRESS + API_VERSION + "/subscription"),
+                };
+                request.Headers.Add("Authorization", _auth.ToString());
+                var result = await _client.SendAsync(request);
+                await CheckRequestError(result, "There is an error while getting subscription");
                 var jsonResponse = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<SubscriptionResponse>(jsonResponse);
                 
                 return response;
+            }
+            catch(Image4ioException e)
+            {
+                throw e;
             }
             catch (Exception e)
             {
@@ -72,49 +80,143 @@ namespace image4ioDotNetSDK
             }
         }
 
-
-        public UploadImageResponse UploadImage(UploadImageRequest model) => UploadImageAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
-
-        public async Task<UploadImageResponse> UploadImageAsync(UploadImageRequest model)
+        public async Task<UploadImageResponse> UploadImage(UploadImageRequest model)
         {
             try
             {
-                MultipartFormDataContent form = new MultipartFormDataContent
+                string json = JsonConvert.SerializeObject(new SignUrlRequest
                 {
-                    { new StringContent(model.UseFilename.ToString()), "useFilename" },
-                    { new StringContent(model.Overwrite.ToString()), "overwrite" },
-                    { new StringContent(model.Path.ToString()), "path" }
+                    FromSdk=true,
+                    Path=model.Path,
+                    Filename=model.Image.FileName,
+                    Ext=model.Image.Extension,
+                    Overwrite=model.Overwrite,
+                    UseFilename=model.UseFilename
+                });
+                StringContent signUrlContent = new StringContent(json, Encoding.Default, "application/json");
+                var signUrlRequest = new HttpRequestMessage()
+                {
+                    Method = HttpMethod.Post,
+                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/getSignUrl"),
+                    Content= signUrlContent,
                 };
-                foreach (var i in model.Files)
-                {
-                    form.Add(new StreamContent(i.Data), "file", i.FileName);
-                }
+                signUrlRequest.Headers.Add("Authorization", _auth.ToString());
 
-                var result = await client.PostAsync(API_VERSION + "/uploadImage", form);
-                if (result.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    return new UploadImageResponse
-                    {
-                        Success = false,
-                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
-                    };
-                }
-                var jsonResponse = await result.Content.ReadAsStringAsync();
-                var response = JsonConvert.DeserializeObject<UploadImageResponse>(jsonResponse);
+                var signUrlResult = await _client.SendAsync(signUrlRequest);
+                await CheckRequestError(signUrlResult, "There is an error while uploading image");
+                var signUrlResponse = await signUrlResult.Content.ReadAsStringAsync();
+                var signUrl = JsonConvert.DeserializeObject<SignUrlResponse>(signUrlResponse);
 
+                var uploadContent = new StreamContent(model.Image.Data);
+                var uploadRequest = new HttpRequestMessage
+                {
+                    Method = HttpMethod.Put,
+                    RequestUri = new Uri(signUrl.Url),
+                    Content = uploadContent,
+                };
+                var putRes=await _client.SendAsync(uploadRequest);
+                await CheckRequestError(putRes, "There is an error while uploading image");
+
+                string imgJson = JsonConvert.SerializeObject(new UploadImageReq
+                {
+                    FromSdk = true,
+                    Path =signUrl.Path
+                });
+                StringContent imgContent = new StringContent(imgJson, Encoding.Default, "application/json");
+                var imgRequest = new HttpRequestMessage()
+                {
+                    Method = HttpMethod.Post,
+                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/image"),
+                    Content = imgContent,
+                };
+                imgRequest.Headers.Add("Authorization", _auth.ToString());
+
+                var imgResult = await _client.SendAsync(imgRequest);
+                await CheckRequestError(imgResult, "There is an error while uploading image");
+                var imgResponse = await imgResult.Content.ReadAsStringAsync();
+                var response= JsonConvert.DeserializeObject<UploadImageResponse>(imgResponse);
                 return response;
+            }
+            catch (Image4ioException e)
+            {
+                throw e;
             }
             catch (Exception e)
             {
-                var ex = new Image4ioException("There is an error while uploading image(s)", e);
+                var ex = new Image4ioException("There is an error while uploading image", e);
                 throw ex;
             }
         }
 
+        public async Task<UploadStreamResponse> UploadStream(UploadStreamRequest model)
+        {
+            try
+            {
+                string json = JsonConvert.SerializeObject(new SignUrlRequest
+                {
+                    FromSdk = true,
+                    Path = model.Path,
+                    Filename = model.Stream.FileName,
+                    Ext = model.Stream.Extension,
+                    Overwrite = model.Overwrite,
+                    UseFilename = model.UseFilename
+                });
+                StringContent signUrlContent = new StringContent(json, Encoding.Default, "application/json");
+                var signUrlRequest = new HttpRequestMessage()
+                {
+                    Method = HttpMethod.Post,
+                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/getSignUrl"),
+                    Content = signUrlContent,
+                };
+                signUrlRequest.Headers.Add("Authorization", _auth.ToString());
 
-        public ImageResponse GetImage(ImageRequest model) => GetImageAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+                var signUrlResult = await _client.SendAsync(signUrlRequest);
+                await CheckRequestError(signUrlResult, "There is an error while uploading stream");
+                var signUrlResponse = await signUrlResult.Content.ReadAsStringAsync();
+                var signUrl = JsonConvert.DeserializeObject<SignUrlResponse>(signUrlResponse);
 
-        public async Task<ImageResponse> GetImageAsync(ImageRequest model)
+                var uploadContent = new StreamContent(model.Stream.Data);
+                var uploadRequest = new HttpRequestMessage
+                {
+                    Method = HttpMethod.Put,
+                    RequestUri = new Uri(signUrl.Url),
+                    Content = uploadContent,
+                };
+                var putRes = await _client.SendAsync(uploadRequest);
+                await CheckRequestError(putRes, "There is an error while uploading stream");
+
+                string imgJson = JsonConvert.SerializeObject(new UploadImageReq
+                {
+                    FromSdk = true,
+                    Path = signUrl.Path
+                });
+                StringContent imgContent = new StringContent(imgJson, Encoding.Default, "application/json");
+                var imgRequest = new HttpRequestMessage()
+                {
+                    Method = HttpMethod.Post,
+                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/stream"),
+                    Content = imgContent,
+                };
+                imgRequest.Headers.Add("Authorization", _auth.ToString());
+
+                var imgResult = await _client.SendAsync(imgRequest);
+                await CheckRequestError(imgResult, "There is an error while uploading stream");
+                var imgResponse = await imgResult.Content.ReadAsStringAsync();
+                var response = JsonConvert.DeserializeObject<UploadStreamResponse>(imgResponse);
+                return response;
+            }
+            catch (Image4ioException e)
+            {
+                throw e;
+            }
+            catch (Exception e)
+            {
+                var ex = new Image4ioException("There is an error while uploading image", e);
+                throw ex;
+            }
+        }
+
+        public async Task<GetImageResponse> GetImage(GetImageRequest model)
         {
             try
             {
@@ -124,19 +226,16 @@ namespace image4ioDotNetSDK
                     RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/image?name=" + model.Name),
                 };
 
-                var result = await client.SendAsync(request);
-                if (result.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    return new ImageResponse
-                    {
-                        Success = false,
-                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
-                    };
-                }
-                var jsonResponse = await result.Content.ReadAsStringAsync();
-                var response = JsonConvert.DeserializeObject<ImageResponse>(jsonResponse);
+                var result = await _client.SendAsync(request);
+                await CheckRequestError(result, "There is an error while getting image");
+                var imgResponse = await result.Content.ReadAsStringAsync();
+                var response = JsonConvert.DeserializeObject<GetImageResponse>(imgResponse);
 
                 return response;
+            }
+            catch (Image4ioException e)
+            {
+                throw e;
             }
             catch (Exception e)
             {
@@ -145,28 +244,58 @@ namespace image4ioDotNetSDK
             }
         }
 
-        public CreateFolderResponse CreateFolder(CreateFolderRequest model) => CreateFolderAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+        public async Task<GetStreamResponse> GetStream(GetStreamRequest model)
+        {
+            try
+            {
+                var request = new HttpRequestMessage()
+                {
+                    Method = HttpMethod.Get,
+                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/stream?name=" + model.Name),
+                };
 
-        public async Task<CreateFolderResponse> CreateFolderAsync(CreateFolderRequest model)
+                var result = await _client.SendAsync(request);
+                await CheckRequestError(result, "There is an error while getting stream");
+                var jsonResponse = await result.Content.ReadAsStringAsync();
+                var response = JsonConvert.DeserializeObject<GetStreamResponse>(jsonResponse);
+
+                return response;
+            }
+            catch (Image4ioException e)
+            {
+                throw e;
+            }
+            catch (Exception e)
+            {
+                var ex = new Image4ioException("There is an error while getting stream", e);
+                throw ex;
+            }
+        }
+
+        public async Task<CreateFolderResponse> CreateFolder(CreateFolderRequest model)
         {
             try
             {
                 string json = JsonConvert.SerializeObject(model);
-                StringContent stringContent = new StringContent(json, Encoding.Default, "application/json");
-
-                var result = await client.PostAsync(API_VERSION + "/createFolder", stringContent);
-                if (result.StatusCode == HttpStatusCode.Unauthorized)
+                StringContent content = new StringContent(json, Encoding.Default, "application/json");
+                var request = new HttpRequestMessage()
                 {
-                    return new CreateFolderResponse
-                    {
-                        Success = false,
-                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
-                    };
-                }
-                var jsonResponse = await result.Content.ReadAsStringAsync();
-                var response = JsonConvert.DeserializeObject<CreateFolderResponse>(jsonResponse);
+                    Method = HttpMethod.Post,
+                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/folder"),
+                    Content = content,
+                };
+                request.Headers.Add("Authorization", _auth.ToString());
+
+                var result = await _client.SendAsync(request);
+                await CheckRequestError(result, "There is an error while creating folder");
+                var imgResponse = await result.Content.ReadAsStringAsync();
+                var response = JsonConvert.DeserializeObject<CreateFolderResponse>(imgResponse);
 
                 return response;
+            }
+            catch (Image4ioException e)
+            {
+                throw e;
             }
             catch (Exception e)
             {
@@ -175,28 +304,29 @@ namespace image4ioDotNetSDK
             }
         }
 
-        public CopyImageResponse CopyImage(CopyImageRequest model) => CopyImageAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
-
-        public async Task<CopyImageResponse> CopyImageAsync(CopyImageRequest model)
+        public async Task<CopyImageResponse> CopyImage(CopyImageRequest model)
         {
             try
             {
                 string json = JsonConvert.SerializeObject(model);
-                StringContent stringContent = new StringContent(json, Encoding.Default, "application/json");
-
-                var result = await client.PutAsync(API_VERSION + "/copyImage", stringContent);
-                if (result.StatusCode == HttpStatusCode.Unauthorized)
+                StringContent content = new StringContent(json, Encoding.Default, "application/json");
+                var request = new HttpRequestMessage()
                 {
-                    return new CopyImageResponse
-                    {
-                        Success = false,
-                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
-                    };
-                }
+                    Method = HttpMethod.Put,
+                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/copyImage"),
+                    Content = content,
+                };
+                request.Headers.Add("Authorization", _auth.ToString());
+                var result = await _client.SendAsync(request);
+                await CheckRequestError(result, "There is an error while copying image");
                 var jsonResponse = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<CopyImageResponse>(jsonResponse);
 
                 return response;
+            }
+            catch (Image4ioException e)
+            {
+                throw e;
             }
             catch (Exception e)
             {
@@ -205,28 +335,29 @@ namespace image4ioDotNetSDK
             }
         }
 
-        public MoveImageResponse MoveImage(MoveImageRequest model) => MoveImageAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
-
-        public async Task<MoveImageResponse> MoveImageAsync(MoveImageRequest model)
+        public async Task<MoveImageResponse> MoveImage(MoveImageRequest model)
         {
             try
             {
                 string json = JsonConvert.SerializeObject(model);
-                StringContent stringContent = new StringContent(json, Encoding.Default, "application/json");
-
-                var result = await client.PutAsync(API_VERSION + "/moveImage", stringContent);
-                if (result.StatusCode == HttpStatusCode.Unauthorized)
+                StringContent content = new StringContent(json, Encoding.Default, "application/json");
+                var request = new HttpRequestMessage()
                 {
-                    return new MoveImageResponse
-                    {
-                        Success = false,
-                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
-                    };
-                }
+                    Method = HttpMethod.Put,
+                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/moveImage"),
+                    Content = content,
+                };
+                request.Headers.Add("Authorization", _auth.ToString());
+                var result = await _client.SendAsync(request);
+                await CheckRequestError(result, "There is an error while moving image");
                 var jsonResponse = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<MoveImageResponse>(jsonResponse);
 
                 return response;
+            }
+            catch (Image4ioException e)
+            {
+                throw e;
             }
             catch (Exception e)
             {
@@ -236,9 +367,7 @@ namespace image4ioDotNetSDK
 
         }
 
-        public ListFolderResponse ListFolder(ListFolderRequest model) => ListFolderAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
-
-        public async Task<ListFolderResponse> ListFolderAsync(ListFolderRequest model)
+        public async Task<ListFolderResponse> ListFolder(ListFolderRequest model)
         {
             try
             {
@@ -255,21 +384,19 @@ namespace image4ioDotNetSDK
                 var request = new HttpRequestMessage()
                 {
                     Method = HttpMethod.Get,
-                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/listFolder" + queryBuilder.ToQueryString()),
+                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/folder" + queryBuilder.ToQueryString()),
                 };
-                var result = await client.SendAsync(request);
-                if (result.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    return new ListFolderResponse
-                    {
-                        Success = false,
-                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
-                    };
-                }
+                request.Headers.Add("Authorization", _auth.ToString());
+                var result = await _client.SendAsync(request);
+                await CheckRequestError(result, "There is an error while listing folder");
                 var jsonResponse = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<ListFolderResponse>(jsonResponse);
 
                 return response;
+            }
+            catch (Image4ioException e)
+            {
+                throw e;
             }
             catch (Exception e)
             {
@@ -278,111 +405,152 @@ namespace image4ioDotNetSDK
             }
         }
 
-        public DeleteImageResponse DeleteImage(DeleteImageRequest model) => DeleteImageAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
-
-        public async Task<DeleteImageResponse> DeleteImageAsync(DeleteImageRequest model)
+        public async Task<DeleteImageResponse> DeleteImage(DeleteImageRequest model)
         {
             try
             {
                 var request = new HttpRequestMessage()
                 {
                     Method = HttpMethod.Delete,
-                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/deleteImage"),
+                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/image"),
                     Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.Default, "application/json")
                 };
-
-                var result = await client.SendAsync(request);
-                if (result.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    return new DeleteImageResponse
-                    {
-                        Success = false,
-                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
-                    };
-                }
+                request.Headers.Add("Authorization", _auth.ToString());
+                var result = await _client.SendAsync(request);
+                await CheckRequestError(result, "There is an error while deleting image");
                 var jsonResponse = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<DeleteImageResponse>(jsonResponse);
 
                 return response;
             }
+            catch (Image4ioException e)
+            {
+                throw e;
+            }
             catch (Exception e)
             {
-                var ex = new Image4ioException("There is an error while deleting an image", e);
+                var ex = new Image4ioException("There is an error while deleting image", e);
                 throw ex;
             }
         }
 
-        public DeleteFolderResponse DeleteFolder(DeleteFolderRequest model) => DeleteFolderAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
-
-        public async Task<DeleteFolderResponse> DeleteFolderAsync(DeleteFolderRequest model)
+        public async Task<DeleteStreamResponse> DeleteStream(DeleteStreamRequest model)
         {
             try
             {
                 var request = new HttpRequestMessage()
                 {
                     Method = HttpMethod.Delete,
-                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/deleteFolder"),
+                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/stream"),
                     Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.Default, "application/json")
                 };
 
-                var result = await client.SendAsync(request);
-                if (result.StatusCode == HttpStatusCode.Unauthorized)
+                var result = await _client.SendAsync(request);
+                await CheckRequestError(result, "There is an error while deleting stream");
+                var jsonResponse = await result.Content.ReadAsStringAsync();
+                var response = JsonConvert.DeserializeObject<DeleteStreamResponse>(jsonResponse);
+
+                return response;
+            }
+            catch (Image4ioException e)
+            {
+                throw e;
+            }
+            catch (Exception e)
+            {
+                var ex = new Image4ioException("There is an error while deleting a stream", e);
+                throw ex;
+            }
+        }
+
+        public async Task<DeleteFolderResponse> DeleteFolder(DeleteFolderRequest model)
+        {
+            try
+            {
+                var request = new HttpRequestMessage()
                 {
-                    return new DeleteFolderResponse
-                    {
-                        Success = false,
-                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
-                    };
-                }
+                    Method = HttpMethod.Delete,
+                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/folder"),
+                    Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.Default, "application/json")
+                };
+
+                var result = await _client.SendAsync(request);
+                await CheckRequestError(result, "There is an error while deleting folder");
                 var jsonResponse = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<DeleteFolderResponse>(jsonResponse);
 
                 return response;
             }
+            catch (Image4ioException e)
+            {
+                throw e;
+            }
             catch (Exception e)
             {
-                var ex = new Image4ioException("There is an error while deleting an image", e);
+                var ex = new Image4ioException("There is an error while deleting folder", e);
                 throw ex;
             }
         }
 
-        public FetchImageResponse FetchImage(FetchImageRequest model) => FetchImageAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+        public async Task<FetchImageResponse> FetchImage(FetchImageRequest model)
+        {
+            try
+            {
+                var request = new HttpRequestMessage()
+                {
+                    Method = HttpMethod.Post,
+                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/fetchImage"),
+                    Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.Default, "application/json")
+                };
 
-        public async Task<FetchImageResponse> FetchImageAsync(FetchImageRequest model)
+                var result = await _client.SendAsync(request);
+                await CheckRequestError(result, "There is an error while fetching image");
+                var jsonResponse = await result.Content.ReadAsStringAsync();
+                var response = JsonConvert.DeserializeObject<FetchImageResponse>(jsonResponse);
+
+                return response;
+            }
+            catch (Image4ioException e)
+            {
+                throw e;
+            }
+            catch (Exception e)
+            {
+                var ex = new Image4ioException("There is an error while fetching image", e);
+                throw ex;
+            }
+        }
+
+        public async Task<FetchStreamResponse> FetchStream(FetchStreamRequest model)
         {
             try
             {
                 string json = JsonConvert.SerializeObject(model);
                 StringContent stringContent = new StringContent(json, Encoding.Default, "application/json");
 
-                var result = await client.PostAsync(API_VERSION + "/fetchImage", stringContent);
-                if (result.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    return new FetchImageResponse
-                    {
-                        Success = false,
-                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
-                    };
-                }
+                var result = await _client.PostAsync(API_VERSION + "/fetchStream", stringContent);
+                await CheckRequestError(result, "There is an error while fetching stream");
                 var jsonResponse = await result.Content.ReadAsStringAsync();
-                var response = JsonConvert.DeserializeObject<FetchImageResponse>(jsonResponse);
+                var response = JsonConvert.DeserializeObject<FetchStreamResponse>(jsonResponse);
 
                 return response;
             }
+            catch (Image4ioException e)
+            {
+                throw e;
+            }
             catch (Exception e)
             {
-                var ex = new Image4ioException("There is an error while deleting an image", e);
+                var ex = new Image4ioException("There is an error while fetching an stream", e);
                 throw ex;
             }
         }
-
-        public PurgeResponse Purge() => PurgeAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-
-        public async Task<PurgeResponse> PurgeAsync()
+        
+        public async Task<PurgeResponse> Purge()
         {
             try
             {
-                var result = await client.DeleteAsync(API_VERSION + "/purge");
+                var result = await _client.DeleteAsync(API_VERSION + "/purge");
                 if (result.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     return new PurgeResponse
@@ -396,6 +564,10 @@ namespace image4ioDotNetSDK
 
                 return response;
             }
+            catch (Image4ioException e)
+            {
+                throw e;
+            }
             catch (Exception e)
             {
                 var ex = new Image4ioException("There is an error while purging the files from CDN", e);
@@ -403,215 +575,67 @@ namespace image4ioDotNetSDK
             }
         }
 
-        #region Streams
-        public StartUploadStreamResponse StartUploadStream(StartUploadStreamRequest model) => StartUploadStreamAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+        #region Private Functions
 
-        public async Task<StartUploadStreamResponse> StartUploadStreamAsync(StartUploadStreamRequest model)
+        private async Task CheckRequestError(HttpResponseMessage response,string errorMessage)
         {
-            try
+            if (!response.IsSuccessStatusCode)
             {
-                string json = JsonConvert.SerializeObject(model);
-                StringContent stringContent = new StringContent(json, Encoding.Default, "application/json");
-
-                var result = await client.PostAsync(API_VERSION + "/uploadStream", stringContent);
-                if (result.StatusCode == HttpStatusCode.Unauthorized)
+                BaseResponse err;
+                try
                 {
-                    return new StartUploadStreamResponse
-                    {
-                        Success = false,
-                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
-                    };
+                    var res = await response.Content.ReadAsStringAsync();
+                    err = JsonConvert.DeserializeObject<BaseResponse>(res);
+
                 }
-                var jsonResponse = await result.Content.ReadAsStringAsync();
-                var response = JsonConvert.DeserializeObject<StartUploadStreamResponse>(jsonResponse);
-
-                return response;
-            }
-            catch (Exception e)
-            {
-                var ex = new Image4ioException("There is an error while starting to upload a stream", e);
-                throw ex;
-            }
-        }
-
-        public BaseResponse UploadStreamPart(UploadStreamPartRequest model) => UploadStreamPartAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
-
-        public async Task<BaseResponse> UploadStreamPartAsync(UploadStreamPartRequest model)
-        {
-            try
-            {
-
-                MultipartFormDataContent form = new MultipartFormDataContent
+                catch (Exception)
                 {
-                    { new StreamContent(model.StreamPart), "Part",model.FileName },
-                    { new StringContent(model.PartId.ToString()), "PartId" },
-                    { new StringContent(model.Token), "Token" },
-                    { new StringContent(model.FileName), "FileName" }
-                };
-
-                var request = new HttpRequestMessage(new HttpMethod("PATCH"), new Uri(client.BaseAddress + API_VERSION + "/uploadStream"))
-                {
-                    Content = form
-                };
-
-                var result = await client.SendAsync(request);
-                if (result.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    return new BaseResponse
-                    {
-                        Success = false,
-                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
-                    };
+                    throw new Image4ioException(errorMessage, new Exception());
                 }
-                if (!result.IsSuccessStatusCode)
+                if (err != null && err.Errors.Count > 0)
                 {
-                    var jsonResponse = await result.Content.ReadAsStringAsync();
-                    var response = JsonConvert.DeserializeObject<BaseResponse>(jsonResponse);
-                    return response;
+                    throw new Image4ioException(err.Errors.FirstOrDefault(), new Exception());
                 }
                 else
                 {
-                    return new BaseResponse
-                    {
-                        Errors = new List<string>(),
-                        Messages = new List<string>(),
-                        Success = true
-                    };
+                    throw new Image4ioException(errorMessage, new Exception());
                 }
-
-            }
-            catch (Exception e)
-            {
-                var ex = new Image4ioException("There is an error while uploading stream part", e);
-                throw ex;
             }
         }
 
-        public FinalizeStreamResponse FinalizeStream(FinalizeStreamRequest model) => FinalizeStreamAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
+        #endregion
 
-        public async Task<FinalizeStreamResponse> FinalizeStreamAsync(FinalizeStreamRequest model)
+        #region Private Models
+        private class SignUrlRequest
         {
-            try
-            {
-                string json = JsonConvert.SerializeObject(model);
-                StringContent stringContent = new StringContent(json, Encoding.Default, "application/json");
-
-                var result = await client.PostAsync(API_VERSION + "/finalizeStream", stringContent);
-                if (result.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    return new FinalizeStreamResponse
-                    {
-                        Success = false,
-                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
-                    };
-                }
-                var jsonResponse = await result.Content.ReadAsStringAsync();
-                var response = JsonConvert.DeserializeObject<FinalizeStreamResponse>(jsonResponse);
-
-                return response;
-            }
-            catch (Exception e)
-            {
-                var ex = new Image4ioException("There is an error while finalizing the stream", e);
-                throw ex;
-            }
+            [JsonProperty("fromSdk")]
+            public bool FromSdk { get; set; }
+            [JsonProperty("path")]
+            public string Path { get; set; }
+            [JsonProperty("filename")]
+            public string Filename { get; set; }
+            [JsonProperty("ext")]
+            public string Ext { get; set; }
+            [JsonProperty("useFilename")]
+            public bool UseFilename { get; set; }
+            [JsonProperty("overwrite")]
+            public bool Overwrite { get; set; }
         }
 
-        public StreamResponse GetStream(StreamRequest model) => GetStreamAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
-
-        public async Task<StreamResponse> GetStreamAsync(StreamRequest model)
+        private class SignUrlResponse : BaseResponse
         {
-            try
-            {
-                var request = new HttpRequestMessage()
-                {
-                    Method = HttpMethod.Get,
-                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/stream?name=" + model.Name),
-                };
-
-                var result = await client.SendAsync(request);
-                if (result.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    return new StreamResponse
-                    {
-                        Success = false,
-                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
-                    };
-                }
-                var jsonResponse = await result.Content.ReadAsStringAsync();
-                var response = JsonConvert.DeserializeObject<StreamResponse>(jsonResponse);
-
-                return response;
-            }
-            catch (Exception e)
-            {
-                var ex = new Image4ioException("There is an error while getting stream", e);
-                throw ex;
-            }
+            [JsonProperty("url")]
+            public string Url { get; set; }
+            [JsonProperty("path")]
+            public string Path { get; set; }
         }
 
-        public DeleteStreamResponse DeleteStream(DeleteStreamRequest model) => DeleteStreamAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
-
-        public async Task<DeleteStreamResponse> DeleteStreamAsync(DeleteStreamRequest model)
+        private class UploadImageReq
         {
-            try
-            {
-                var request = new HttpRequestMessage()
-                {
-                    Method = HttpMethod.Delete,
-                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/deleteStream"),
-                    Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.Default, "application/json")
-                };
-
-                var result = await client.SendAsync(request);
-                if (result.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    return new DeleteStreamResponse
-                    {
-                        Success = false,
-                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
-                    };
-                }
-                var jsonResponse = await result.Content.ReadAsStringAsync();
-                var response = JsonConvert.DeserializeObject<DeleteStreamResponse>(jsonResponse);
-
-                return response;
-            }
-            catch (Exception e)
-            {
-                var ex = new Image4ioException("There is an error while deleting a stream", e);
-                throw ex;
-            }
-        }
-
-        public FetchStreamResponse FetchStream(FetchStreamRequest model) => FetchStreamAsync(model).ConfigureAwait(false).GetAwaiter().GetResult();
-
-        public async Task<FetchStreamResponse> FetchStreamAsync(FetchStreamRequest model)
-        {
-            try
-            {
-                string json = JsonConvert.SerializeObject(model);
-                StringContent stringContent = new StringContent(json, Encoding.Default, "application/json");
-
-                var result = await client.PostAsync(API_VERSION + "/fetchStream", stringContent);
-                if (result.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    return new FetchStreamResponse
-                    {
-                        Success = false,
-                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
-                    };
-                }
-                var jsonResponse = await result.Content.ReadAsStringAsync();
-                var response = JsonConvert.DeserializeObject<FetchStreamResponse>(jsonResponse);
-
-                return response;
-            }
-            catch (Exception e)
-            {
-                var ex = new Image4ioException("There is an error while fetching an stream", e);
-                throw ex;
-            }
+            [JsonProperty("fromSdk")]
+            public bool FromSdk { get; set; }
+            [JsonProperty("path")]
+            public string Path { get; set; }
         }
 
         #endregion

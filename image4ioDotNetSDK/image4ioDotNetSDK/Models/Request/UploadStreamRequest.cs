@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace image4ioDotNetSDK.Models
+namespace image4ioDotNetSDK.Models.Request
 {
-    public class UploadImageRequest
+    public class UploadStreamRequest
     {
         public bool UseFilename { get; set; }
 
@@ -11,7 +15,7 @@ namespace image4ioDotNetSDK.Models
 
         public string Path { get; set; }
 
-        public File Image { get; set; }
+        public File Stream { get; set; }
 
         public class File
         {
@@ -19,6 +23,5 @@ namespace image4ioDotNetSDK.Models
             public string FileName { get; set; }
             public string Extension { get; set; }
         }
-
     }
 }

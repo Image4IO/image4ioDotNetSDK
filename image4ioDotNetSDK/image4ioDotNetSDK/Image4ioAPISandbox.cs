@@ -85,12 +85,12 @@ namespace image4ioDotNetSDK
             throw new NotImplementedException();
         }
 
-        public FinalizeStreamResponse FinalizeStream(FinalizeStreamRequest request)
+        public UploadStreamResponse FinalizeStream(FinalizeStreamRequest request)
         {
             throw new NotImplementedException();
         }
 
-        public Task<FinalizeStreamResponse> FinalizeStreamAsync(FinalizeStreamRequest request)
+        public Task<UploadStreamResponse> FinalizeStreamAsync(FinalizeStreamRequest request)
         {
             throw new NotImplementedException();
         }

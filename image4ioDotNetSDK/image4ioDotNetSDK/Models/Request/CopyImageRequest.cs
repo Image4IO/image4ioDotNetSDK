@@ -13,8 +13,6 @@ namespace image4ioDotNetSDK.Models
         public string Name { get; set; }
         [JsonProperty("useFilename")]
         public bool UseFilename { get; set; }
-        [JsonProperty("overwrite")]
-        public bool Overwrite { get; set; }
     }
 
 

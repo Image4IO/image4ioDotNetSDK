@@ -4,17 +4,12 @@ namespace image4ioDotNetSDK.Models
 {
     public class DeleteImageResponse : BaseResponse
     {
-        public File DeletedImage { get; set; }
+        public DeleteImage DeletedImage { get; set; }
 
-        public class File
+        public class DeleteImage
         {
-            [JsonProperty(PropertyName = "name")]
-            public string Name { get; set; }
-
-            [JsonProperty(PropertyName = "status")]
-            public string Status { get; set; }
-            [JsonProperty(PropertyName = "imagePath")]
-            public string ImagePath { get; set; }
+            [JsonProperty(PropertyName = "source")]
+            public string Source { get; set; }
             [JsonProperty(PropertyName = "url")]
             public string Url { get; set; }
         }

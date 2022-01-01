@@ -8,6 +8,7 @@ namespace image4ioDotNetSDKTest
 {
     public class MockResponses
     {
+        /*
         public static SubscriptionResponse ReturnNormalSubscriptionResponse()
         {
             return new SubscriptionResponse(){
@@ -262,11 +263,11 @@ namespace image4ioDotNetSDKTest
             };
         }
 
-        public static FinalizeStreamResponse ReturnFinalizeStreamResponse()
+        public static UploadStreamResponse ReturnFinalizeStreamResponse()
         {
-            return new FinalizeStreamResponse
+            return new UploadStreamResponse
             {
-                UploadedStream = new FinalizeStreamResponse.File
+                UploadedStream = new UploadStreamResponse.File
                 {
                     UserGivenName = "name-of-the-stream.mp4",
                     Name = "/4afdcb21ef149f06309573734e6d9515",
@@ -343,6 +344,6 @@ namespace image4ioDotNetSDKTest
                     ReadyToStream = false,
                 }
             };
-        }
+        }*/
     }
 }

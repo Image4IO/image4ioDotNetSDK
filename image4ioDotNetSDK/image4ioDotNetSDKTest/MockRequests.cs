@@ -10,11 +10,12 @@ namespace image4ioDotNetSDKTest
 {
     public class MockRequests
     {
+        /*
         public static UploadImageRequest ReturnUploadImageRequest()
         {
             return new UploadImageRequest()
             {
-                Files = new List<UploadImageRequest.File>(),
+                Image= new UploadImageRequest.File(),
                 Overwrite = true,
                 UseFilename = true,
                 Path = "/"
@@ -60,6 +61,6 @@ namespace image4ioDotNetSDKTest
                 StreamPart = new MemoryStream(),
                 Token = "upload_token"
             };
-        }
+        }*/
     }
 }
