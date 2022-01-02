@@ -20,6 +20,6 @@ namespace image4ioDotNetSDK
         Task<DeleteFolderResponse> DeleteFolder(DeleteFolderRequest model);
         Task<FetchImageResponse> FetchImage(FetchImageRequest model);
         Task<FetchStreamResponse> FetchStream(FetchStreamRequest model);
-        Task<PurgeResponse> Purge();
+        Task<PurgeResponse> Purge(PurgeRequest model);
     }
 }

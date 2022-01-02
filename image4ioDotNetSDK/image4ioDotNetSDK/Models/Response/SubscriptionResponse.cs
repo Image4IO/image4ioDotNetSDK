@@ -53,7 +53,7 @@ namespace image4ioDotNetSDK.Models
         public class StorageUsageData
         {
             [JsonProperty("usageInGB")]
-            public long UsageInGB { get; set; }
+            public double UsageInGB { get; set; }
             [JsonProperty("limitInGB")]
             public double LimitInGB { get; set; }
             [JsonProperty("assetCount")]

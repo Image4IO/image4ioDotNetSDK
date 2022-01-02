@@ -25,7 +25,7 @@ namespace image4ioDotNetSDKTest
 
         private static Mock<HttpMessageHandler> messageHandlerMock;
 
-        private readonly string API_VERSION = "v1.0";
+        private readonly string API_VERSION = "v2.0";
         private readonly string BASE_ADDRESS = "https://api.image4.io/";
 
         public APIUnitTest()
@@ -42,11 +42,10 @@ namespace image4ioDotNetSDKTest
 
         public void Dispose()
         {
-            throw new NotImplementedException();
         }
-        /*
+        
         [Fact]
-        public async Task SubscriptionAsync_NoErrorOccured_ReturnsResponse()
+        public async Task Subscription_NoErrorOccured_ReturnsResponse()
         {
            //Arrange
            messageHandlerMock.Protected()
@@ -59,31 +58,84 @@ namespace image4ioDotNetSDKTest
               });
 
            //Act
-           var result = await SUT.SubscriptionAsync();
+           var result = await SUT.Subscription();
            //Assert
            Assert.IsType<SubscriptionResponse>(result);
         }
 
         [Fact]
-        public async Task UploadImageAsync_NoErrorOccured_ReturnsResponse()
+        public async Task UploadImage_NoErrorOccured_ReturnsResponse()
         {
-           //Arrange
-           messageHandlerMock.Protected()
-              .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(x =>
-                  x.RequestUri.ToString() == BASE_ADDRESS + API_VERSION + "/uploadImage"), ItExpr.IsAny<CancellationToken>())
-              .ReturnsAsync(new HttpResponseMessage
-              {
-                  StatusCode = HttpStatusCode.OK,
-                  Content = new StringContent(JsonConvert.SerializeObject(MockResponses.ReturnNormalUploadImageResponse()), Encoding.Default, "application/json")
-              });
-           //Act
-           var result = await SUT.UploadImageAsync(MockRequests.ReturnUploadImageRequest());
-           //Assert
-           Assert.IsType<UploadImageResponse>(result);
+            //Arrange
+            messageHandlerMock.Protected()
+                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(x =>
+                    x.RequestUri.ToString() == BASE_ADDRESS + API_VERSION + "/getSignUrl"), ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StringContent(JsonConvert.SerializeObject(MockResponses.ReturnImageSignUrlResponse()), Encoding.Default, "application/json")
+                });
+
+            messageHandlerMock.Protected()
+                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(x =>
+                    x.RequestUri.ToString() == "https://mockresponse.com/image"), ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StreamContent(new MemoryStream())
+                });
+
+            messageHandlerMock.Protected()
+                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(x =>
+                    x.RequestUri.ToString() == BASE_ADDRESS + API_VERSION + "/image"), ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StringContent(JsonConvert.SerializeObject(MockResponses.ReturnNormalUploadImageResponse()), Encoding.Default, "application/json")
+                });
+            //Act
+            var result = await SUT.UploadImage(MockRequests.ReturnUploadImageRequest());
+            //Assert
+            Assert.IsType<UploadImageResponse>(result);
         }
 
         [Fact]
-        public async Task GetImagesAsync_NoErrorOccured_ReturnsResponse()
+        public async Task UploadStream_NoErrorOccured_ReturnsResponse()
+        {
+            //Arrange
+            messageHandlerMock.Protected()
+                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(x =>
+                    x.RequestUri.ToString() == BASE_ADDRESS + API_VERSION + "/getSignUrl"), ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StringContent(JsonConvert.SerializeObject(MockResponses.ReturnStreamSignUrlResponse()), Encoding.Default, "application/json")
+                });
+
+            messageHandlerMock.Protected()
+                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(x =>
+                    x.RequestUri.ToString() == "https://mockresponse.com/stream"), ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.OK,
+                });
+
+            messageHandlerMock.Protected()
+                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(x =>
+                    x.RequestUri.ToString() == BASE_ADDRESS + API_VERSION + "/stream"), ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StringContent(JsonConvert.SerializeObject(MockResponses.ReturnNormalUploadStreamResponse()), Encoding.Default, "application/json")
+                });
+            //Act
+            var result = await SUT.UploadStream(MockRequests.ReturnUploadStreamRequest());
+            //Assert
+            Assert.IsType<UploadStreamResponse>(result);
+        }
+
+        [Fact]
+        public async Task GetImage_NoErrorOccured_ReturnsResponse()
         {
            //Arrange
            messageHandlerMock.Protected()
@@ -95,31 +147,49 @@ namespace image4ioDotNetSDKTest
                   Content = new StringContent(JsonConvert.SerializeObject(MockResponses.ReturnGetImageResponse()), Encoding.Default, "application/json")
               });
            //Act
-           var result = await SUT.GetImageAsync(new ImageRequest());
+           var result = await SUT.GetImage(new GetImageRequest());
            //Assert
-           Assert.IsType<ImageResponse>(result);
+           Assert.IsType<GetImageResponse>(result);
         }
 
         [Fact]
-        public async Task CreateFolderAsync_NoErrorOccured_ReturnsResponse()
+        public async Task GetStream_NoErrorOccured_ReturnsResponse()
+        {
+            //Arrange
+            messageHandlerMock.Protected()
+               .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(x =>
+                   x.RequestUri.ToString().StartsWith(BASE_ADDRESS + API_VERSION + "/stream")), ItExpr.IsAny<CancellationToken>())
+               .ReturnsAsync(new HttpResponseMessage
+               {
+                   StatusCode = HttpStatusCode.OK,
+                   Content = new StringContent(JsonConvert.SerializeObject(MockResponses.ReturnGetImageResponse()), Encoding.Default, "application/json")
+               });
+            //Act
+            var result = await SUT.GetStream(new GetStreamRequest());
+            //Assert
+            Assert.IsType<GetStreamResponse>(result);
+        }
+
+        [Fact]
+        public async Task CreateFolder_NoErrorOccured_ReturnsResponse()
         {
            //Arrange
            messageHandlerMock.Protected()
               .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(x =>
-                  x.RequestUri.ToString() == BASE_ADDRESS + API_VERSION + "/createFolder"), ItExpr.IsAny<CancellationToken>())
+                  x.RequestUri.ToString() == BASE_ADDRESS + API_VERSION + "/folder"), ItExpr.IsAny<CancellationToken>())
               .ReturnsAsync(new HttpResponseMessage
               {
                   StatusCode = HttpStatusCode.OK,
                   Content = new StringContent(JsonConvert.SerializeObject(MockResponses.ReturnCreateFolderResponse()), Encoding.Default, "application/json")
               });
            //Act
-           var result = await SUT.CreateFolderAsync(new CreateFolderRequest() { Path = "/test" });
+           var result = await SUT.CreateFolder(new CreateFolderRequest() { Path = "/test" });
            //Assert
            Assert.IsType<CreateFolderResponse>(result);
         }
 
         [Fact]
-        public async Task CopyImageAsync_NoErrorOccured_ReturnsResponse()
+        public async Task CopyImage_NoErrorOccured_ReturnsResponse()
         {
            //Arrange
            messageHandlerMock.Protected()
@@ -131,13 +201,13 @@ namespace image4ioDotNetSDKTest
                   Content = new StringContent(JsonConvert.SerializeObject(MockResponses.ReturnCopyImageResponse()), Encoding.Default, "application/json")
               });
            //Act
-           var result = await SUT.CopyImageAsync(MockRequests.ReturnCopyImageRequest());
+           var result = await SUT.CopyImage(MockRequests.ReturnCopyImageRequest());
            //Assert
            Assert.IsType<CopyImageResponse>(result);
         }
 
         [Fact]
-        public async Task MoveImageAsync_NoErrorOccured_ReturnsResponse()
+        public async Task MoveImage_NoErrorOccured_ReturnsResponse()
         {
            //Arrange
            messageHandlerMock.Protected()
@@ -149,67 +219,67 @@ namespace image4ioDotNetSDKTest
                   Content = new StringContent(JsonConvert.SerializeObject(MockResponses.ReturnMoveImageResponse()), Encoding.Default, "application/json")
               });
            //Act
-           var result = await SUT.MoveImageAsync(MockRequests.ReturnMoveImageRequest());
+           var result = await SUT.MoveImage(MockRequests.ReturnMoveImageRequest());
            //Assert
            Assert.IsType<MoveImageResponse>(result);
         }
 
         [Fact]
-        public async Task ListFolderAsync_NoErrorOccured_ReturnsResponse()
+        public async Task ListFolder_NoErrorOccured_ReturnsResponse()
         {
            //Arrange
            messageHandlerMock.Protected()
               .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(x =>
-                  x.RequestUri.ToString().StartsWith(BASE_ADDRESS + API_VERSION + "/listFolder")), ItExpr.IsAny<CancellationToken>())
+                  x.RequestUri.ToString().StartsWith(BASE_ADDRESS + API_VERSION + "/folder")), ItExpr.IsAny<CancellationToken>())
               .ReturnsAsync(new HttpResponseMessage
               {
                   StatusCode = HttpStatusCode.OK,
                   Content = new StringContent(JsonConvert.SerializeObject(MockResponses.ReturnListFolderResponse()), Encoding.Default, "application/json")
               });
            //Act
-           var result = await SUT.ListFolderAsync(MockRequests.ReturnListFolderRequest());
+           var result = await SUT.ListFolder(MockRequests.ReturnListFolderRequest());
            //Assert
            Assert.IsType<ListFolderResponse>(result);
         }
 
         [Fact]
-        public async Task DeleteFolderAsync_NoErrorOccured_ReturnsResponse()
+        public async Task DeleteFolder_NoErrorOccured_ReturnsResponse()
         {
            //Arrange
            messageHandlerMock.Protected()
               .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(x =>
-                  x.RequestUri.ToString() == BASE_ADDRESS + API_VERSION + "/deleteFolder"), ItExpr.IsAny<CancellationToken>())
+                  x.RequestUri.ToString() == BASE_ADDRESS + API_VERSION + "/folder"), ItExpr.IsAny<CancellationToken>())
               .ReturnsAsync(new HttpResponseMessage
               {
                   StatusCode = HttpStatusCode.OK,
                   Content = new StringContent(JsonConvert.SerializeObject(MockResponses.ReturnDeleteFolderResponse()), Encoding.Default, "application/json")
               });
            //Act
-           var result = await SUT.DeleteFolderAsync(new DeleteFolderRequest() { Path = "/folderName/" });
+           var result = await SUT.DeleteFolder(new DeleteFolderRequest() { Path = "/folderName/" });
            //Assert
            Assert.IsType<DeleteFolderResponse>(result);
         }
 
         [Fact]
-        public async Task DeleteImageAsync_NoErrorOccured_ReturnsResponse()
+        public async Task DeleteImage_NoErrorOccured_ReturnsResponse()
         {
            //Arrange
            messageHandlerMock.Protected()
               .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(x =>
-                  x.RequestUri.ToString() == BASE_ADDRESS + API_VERSION + "/deleteImage"), ItExpr.IsAny<CancellationToken>())
+                  x.RequestUri.ToString() == BASE_ADDRESS + API_VERSION + "/image"), ItExpr.IsAny<CancellationToken>())
               .ReturnsAsync(new HttpResponseMessage
               {
                   StatusCode = HttpStatusCode.OK,
                   Content = new StringContent(JsonConvert.SerializeObject(MockResponses.ReturnDeleteImageResponse()), Encoding.Default, "application/json")
               });
            //Act
-           var result = await SUT.DeleteImageAsync(new DeleteImageRequest() { Name = "/folderName/img.png" });
+           var result = await SUT.DeleteImage(new DeleteImageRequest() { Name = "/folderName/img.png" });
            //Assert
            Assert.IsType<DeleteImageResponse>(result);
         }
 
         [Fact]
-        public async Task FetchImageAsync_NoErrorOccured_ReturnsResponse()
+        public async Task FetchImage_NoErrorOccured_ReturnsResponse()
         {
            //Arrange
            messageHandlerMock.Protected()
@@ -221,102 +291,31 @@ namespace image4ioDotNetSDKTest
                   Content = new StringContent(JsonConvert.SerializeObject(MockResponses.ReturnFetchImageResponse()), Encoding.Default, "application/json")
               });
            //Act
-           var result = await SUT.FetchImageAsync(new FetchImageRequest() { From = "http://example.com/img.png", TargetPath = "/", UseFilename = true });
+           var result = await SUT.FetchImage(new FetchImageRequest() { From = "http://example.com/img.png", TargetPath = "/", UseFilename = true });
            //Assert
            Assert.IsType<FetchImageResponse>(result);
         }
 
         [Fact]
-        public async Task StartUploadStreamAsync_NoErrorOccured_ReturnsResponse()
+        public async Task DeleteStream_NoErrorOccured_ReturnsResponse()
         {
            //Arrange
            messageHandlerMock.Protected()
               .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(x =>
-                  x.RequestUri.ToString() == BASE_ADDRESS + API_VERSION + "/uploadStream"), ItExpr.IsAny<CancellationToken>())
-              .ReturnsAsync(new HttpResponseMessage
-              {
-                  StatusCode = HttpStatusCode.OK,
-                  Content = new StringContent(JsonConvert.SerializeObject(MockResponses.ReturnStartUploadStreamResponse()), Encoding.Default, "application/json")
-              });
-           //Act
-           var result = await SUT.StartUploadStreamAsync(new StartUploadStreamRequest() { Path = "/", FileName = "filename.mp4" });
-           //Assert
-           Assert.IsType<StartUploadStreamResponse>(result);
-        }
-
-        [Fact]
-        public async Task UploadStreamPartAsync_NoErrorOccured_ReturnsResponse()
-        {
-           //Arrange
-           messageHandlerMock.Protected()
-              .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(x =>
-                  x.RequestUri.ToString() == BASE_ADDRESS + API_VERSION + "/uploadStream"), ItExpr.IsAny<CancellationToken>())
-              .ReturnsAsync(new HttpResponseMessage
-              {
-                  StatusCode = HttpStatusCode.Accepted,
-              });
-           //Act
-           var result = await SUT.UploadStreamPartAsync(MockRequests.ReturnUploadStreamPartRequest());
-           //Assert
-           Assert.IsType<BaseResponse>(result);
-        }
-
-        [Fact]
-        public async Task FinalizeStreamAsync_NoErrorOccured_ReturnsResponse()
-        {
-           //Arrange
-           messageHandlerMock.Protected()
-              .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(x =>
-                  x.RequestUri.ToString() == BASE_ADDRESS + API_VERSION + "/finalizeStream"), ItExpr.IsAny<CancellationToken>())
-              .ReturnsAsync(new HttpResponseMessage
-              {
-                  StatusCode = HttpStatusCode.OK,
-                  Content = new StringContent(JsonConvert.SerializeObject(MockResponses.ReturnFinalizeStreamResponse()), Encoding.Default, "application/json")
-              });
-           //Act
-           var result = await SUT.FinalizeStreamAsync(new FinalizeStreamRequest() { FileName = "/filename.mp4", Token = "uploadToken" });
-           //Assert
-           Assert.IsType<UploadStreamResponse>(result);
-        }
-
-        [Fact]
-        public async Task GetStreamAsync_NoErrorOccured_ReturnsResponse()
-        {
-           //Arrange
-           messageHandlerMock.Protected()
-              .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(x =>
-                  x.RequestUri.ToString().StartsWith(BASE_ADDRESS + API_VERSION + "/stream")), ItExpr.IsAny<CancellationToken>())
-              .ReturnsAsync(new HttpResponseMessage
-              {
-                  StatusCode = HttpStatusCode.OK,
-                  Content = new StringContent(JsonConvert.SerializeObject(MockResponses.ReturnGetStreamResponse()), Encoding.Default, "application/json")
-              });
-           //Act
-           var result = await SUT.GetStreamAsync(new StreamRequest() { Name =  "/name-of-stream.mp4"  });
-           //Assert
-           Assert.IsType<StreamResponse>(result);
-        }
-
-        [Fact]
-        public async Task DeleteStreamAsync_NoErrorOccured_ReturnsResponse()
-        {
-           //Arrange
-           messageHandlerMock.Protected()
-              .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(x =>
-                  x.RequestUri.ToString() == BASE_ADDRESS + API_VERSION + "/deleteStream"), ItExpr.IsAny<CancellationToken>())
+                  x.RequestUri.ToString() == BASE_ADDRESS + API_VERSION + "/stream"), ItExpr.IsAny<CancellationToken>())
               .ReturnsAsync(new HttpResponseMessage
               {
                   StatusCode = HttpStatusCode.OK,
                   Content = new StringContent(JsonConvert.SerializeObject(MockResponses.ReturnDeleteStreamResponse()), Encoding.Default, "application/json")
               });
            //Act
-           var result = await SUT.DeleteStreamAsync(new DeleteStreamRequest() { Name = "/4afdcb21ef149f06309573734e6d9515" });
+           var result = await SUT.DeleteStream(new DeleteStreamRequest() { Name = "/4afdcb21ef149f06309573734e6d9515" });
            //Assert
            Assert.IsType<DeleteStreamResponse>(result);
         }
 
         [Fact]
-        public async Task FetchStreamAsync_NoErrorOccured_ReturnsResponse()
+        public async Task FetchStream_NoErrorOccured_ReturnsResponse()
         {
            //Arrange
            messageHandlerMock.Protected()
@@ -328,13 +327,26 @@ namespace image4ioDotNetSDKTest
                   Content = new StringContent(JsonConvert.SerializeObject(MockResponses.ReturnFetchStreamResponse()), Encoding.Default, "application/json")
               });
            //Act
-           var result = await SUT.FetchStreamAsync(new FetchStreamRequest() { From = "http://example.com/img.png", TargetPath = "/", Filename = "name-of-stream.mp4" });
+           var result = await SUT.FetchStream(new FetchStreamRequest() { From = "http://example.com/img.png", TargetPath = "/", Filename = "name-of-stream.mp4" });
            //Assert
            Assert.IsType<FetchStreamResponse>(result);
         }
-
-        public void Dispose()
+        
+        [Fact]
+        public async Task Purge_NoErrorOccured_ReturnsResponse()
         {
-        }*/
+            //Arrange
+            messageHandlerMock.Protected()
+               .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.Is<HttpRequestMessage>(x =>
+                   x.RequestUri.ToString() == BASE_ADDRESS + API_VERSION + "/fetchStream"), ItExpr.IsAny<CancellationToken>())
+               .ReturnsAsync(new HttpResponseMessage
+               {
+                   StatusCode = HttpStatusCode.Accepted,
+               });
+            //Act
+            var result = await SUT.Purge(new PurgeRequest { Path="/" });
+            //Assert
+            Assert.IsType<PurgeResponse>(result);
+        }
     }
 }

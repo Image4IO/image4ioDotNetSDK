@@ -12,7 +12,7 @@ namespace image4ioDotNetSDK.Models.Response
         [JsonProperty(PropertyName = "name", NullValueHandling = NullValueHandling.Ignore)]
         public string Name { get; set; }
         [JsonProperty(PropertyName = "size", NullValueHandling = NullValueHandling.Ignore)]
-        public long Size { get; set; }
+        public string Size { get; set; }
         [JsonProperty(PropertyName = "format", NullValueHandling = NullValueHandling.Ignore)]
         public string Format { get; set; }
         [JsonProperty(PropertyName = "url", NullValueHandling = NullValueHandling.Ignore)]

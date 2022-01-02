@@ -10,24 +10,38 @@ namespace image4ioDotNetSDKTest
 {
     public class MockRequests
     {
-        /*
+        
         public static UploadImageRequest ReturnUploadImageRequest()
         {
             return new UploadImageRequest()
             {
-                Image= new UploadImageRequest.File(),
+                Image= new UploadImageRequest.File
+                {
+                    Data=new MemoryStream()
+                },
                 Overwrite = true,
                 UseFilename = true,
                 Path = "/"
             };
         }
-
+        public static UploadStreamRequest ReturnUploadStreamRequest()
+        {
+            return new UploadStreamRequest()
+            {
+                Stream = new UploadStreamRequest.File
+                {
+                    Data = new MemoryStream()
+                },
+                Overwrite = true,
+                UseFilename = true,
+                Path = "/"
+            };
+        }
         public static CopyImageRequest ReturnCopyImageRequest()
         {
             return new CopyImageRequest()
             {
                 Name = "newName",
-                Overwrite = true,
                 Source = "/folderName/sourcename.png",
                 TargetPath = "/targetFolder",
                 UseFilename = true
@@ -52,15 +66,5 @@ namespace image4ioDotNetSDKTest
             };
         }
 
-        public static UploadStreamPartRequest ReturnUploadStreamPartRequest()
-        {
-            return new UploadStreamPartRequest()
-            {
-                FileName = "test",
-                PartId = 1,
-                StreamPart = new MemoryStream(),
-                Token = "upload_token"
-            };
-        }*/
     }
 }

@@ -5,9 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace image4ioDotNetSDK.Models.Response
+namespace image4ioDotNetSDK.Models.Request
 {
-    public class PurgeResponse : BaseResponse
+    public class PurgeRequest
     {
+        [JsonProperty("path")]
+        public string Path { get; set; } = "/";
     }
 }

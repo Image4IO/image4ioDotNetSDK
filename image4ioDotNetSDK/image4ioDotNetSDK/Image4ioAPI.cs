@@ -71,12 +71,19 @@ namespace image4ioDotNetSDK
             }
             catch(Image4ioException e)
             {
-                throw e;
+                return new SubscriptionResponse
+                {
+                    Success = false,
+                    Errors = new List<string> { e.Message },
+                };
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                var ex = new Image4ioException("There is an error while getting subscription", e);
-                throw ex;
+                return new SubscriptionResponse
+                {
+                    Success = false,
+                    Errors = new List<string> { "There is an error while getting subscription" },
+                };
             }
         }
 
@@ -97,7 +104,7 @@ namespace image4ioDotNetSDK
                 var signUrlRequest = new HttpRequestMessage()
                 {
                     Method = HttpMethod.Post,
-                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/getSignUrl"),
+                    RequestUri = new Uri(BASE_ADDRESS + API_VERSION + "/getSignUrl"),
                     Content= signUrlContent,
                 };
                 signUrlRequest.Headers.Add("Authorization", _auth.ToString());
@@ -126,7 +133,7 @@ namespace image4ioDotNetSDK
                 var imgRequest = new HttpRequestMessage()
                 {
                     Method = HttpMethod.Post,
-                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/image"),
+                    RequestUri = new Uri(BASE_ADDRESS + API_VERSION + "/image"),
                     Content = imgContent,
                 };
                 imgRequest.Headers.Add("Authorization", _auth.ToString());
@@ -139,12 +146,19 @@ namespace image4ioDotNetSDK
             }
             catch (Image4ioException e)
             {
-                throw e;
+                return new UploadImageResponse
+                {
+                    Success = false,
+                    Errors = new List<string> { e.Message },
+                };
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                var ex = new Image4ioException("There is an error while uploading image", e);
-                throw ex;
+                return new UploadImageResponse
+                {
+                    Success = false,
+                    Errors = new List<string> { "There is an error while uploading image" },
+                };
             }
         }
 
@@ -165,7 +179,7 @@ namespace image4ioDotNetSDK
                 var signUrlRequest = new HttpRequestMessage()
                 {
                     Method = HttpMethod.Post,
-                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/getSignUrl"),
+                    RequestUri = new Uri(BASE_ADDRESS + API_VERSION + "/getSignUrl"),
                     Content = signUrlContent,
                 };
                 signUrlRequest.Headers.Add("Authorization", _auth.ToString());
@@ -194,7 +208,7 @@ namespace image4ioDotNetSDK
                 var imgRequest = new HttpRequestMessage()
                 {
                     Method = HttpMethod.Post,
-                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/stream"),
+                    RequestUri = new Uri(BASE_ADDRESS + API_VERSION + "/stream"),
                     Content = imgContent,
                 };
                 imgRequest.Headers.Add("Authorization", _auth.ToString());
@@ -207,12 +221,19 @@ namespace image4ioDotNetSDK
             }
             catch (Image4ioException e)
             {
-                throw e;
+                return new UploadStreamResponse
+                {
+                    Success = false,
+                    Errors = new List<string> { e.Message },
+                };
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                var ex = new Image4ioException("There is an error while uploading image", e);
-                throw ex;
+                return new UploadStreamResponse
+                {
+                    Success = false,
+                    Errors = new List<string> { "There is an error while uploading stream" },
+                };
             }
         }
 
@@ -223,7 +244,7 @@ namespace image4ioDotNetSDK
                 var request = new HttpRequestMessage()
                 {
                     Method = HttpMethod.Get,
-                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/image?name=" + model.Name),
+                    RequestUri = new Uri(BASE_ADDRESS + API_VERSION + "/image?name=" + model.Name),
                 };
 
                 var result = await _client.SendAsync(request);
@@ -235,12 +256,19 @@ namespace image4ioDotNetSDK
             }
             catch (Image4ioException e)
             {
-                throw e;
+                return new GetImageResponse
+                {
+                    Success = false,
+                    Errors = new List<string> { e.Message },
+                };
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                var ex = new Image4ioException("There is an error while getting image", e);
-                throw ex;
+                return new GetImageResponse
+                {
+                    Success = false,
+                    Errors = new List<string> { "There is an error while getting image" },
+                };
             }
         }
 
@@ -251,7 +279,7 @@ namespace image4ioDotNetSDK
                 var request = new HttpRequestMessage()
                 {
                     Method = HttpMethod.Get,
-                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/stream?name=" + model.Name),
+                    RequestUri = new Uri(BASE_ADDRESS + API_VERSION + "/stream?name=" + model.Name),
                 };
 
                 var result = await _client.SendAsync(request);
@@ -263,12 +291,19 @@ namespace image4ioDotNetSDK
             }
             catch (Image4ioException e)
             {
-                throw e;
+                return new GetStreamResponse
+                {
+                    Success = false,
+                    Errors = new List<string> { e.Message },
+                };
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                var ex = new Image4ioException("There is an error while getting stream", e);
-                throw ex;
+                return new GetStreamResponse
+                {
+                    Success = false,
+                    Errors = new List<string> { "There is an error while getting stream" },
+                };
             }
         }
 
@@ -281,7 +316,7 @@ namespace image4ioDotNetSDK
                 var request = new HttpRequestMessage()
                 {
                     Method = HttpMethod.Post,
-                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/folder"),
+                    RequestUri = new Uri(BASE_ADDRESS + API_VERSION + "/folder"),
                     Content = content,
                 };
                 request.Headers.Add("Authorization", _auth.ToString());
@@ -295,12 +330,19 @@ namespace image4ioDotNetSDK
             }
             catch (Image4ioException e)
             {
-                throw e;
+                return new CreateFolderResponse
+                {
+                    Success = false,
+                    Errors = new List<string> { e.Message },
+                };
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                var ex = new Image4ioException("There is an error while creating folder", e);
-                throw ex;
+                return new CreateFolderResponse
+                {
+                    Success = false,
+                    Errors = new List<string> { "There is an error while creating folder" },
+                };
             }
         }
 
@@ -313,7 +355,7 @@ namespace image4ioDotNetSDK
                 var request = new HttpRequestMessage()
                 {
                     Method = HttpMethod.Put,
-                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/copyImage"),
+                    RequestUri = new Uri(BASE_ADDRESS + API_VERSION + "/copyImage"),
                     Content = content,
                 };
                 request.Headers.Add("Authorization", _auth.ToString());
@@ -326,12 +368,19 @@ namespace image4ioDotNetSDK
             }
             catch (Image4ioException e)
             {
-                throw e;
+                return new CopyImageResponse
+                {
+                    Success = false,
+                    Errors = new List<string> { e.Message },
+                };
             }
             catch (Exception e)
             {
-                var ex = new Image4ioException("There is an error while copying image", e);
-                throw ex;
+                return new CopyImageResponse
+                {
+                    Success = false,
+                    Errors = new List<string> { "There is an error while copying image" },
+                };
             }
         }
 
@@ -344,7 +393,7 @@ namespace image4ioDotNetSDK
                 var request = new HttpRequestMessage()
                 {
                     Method = HttpMethod.Put,
-                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/moveImage"),
+                    RequestUri = new Uri(BASE_ADDRESS + API_VERSION + "/moveImage"),
                     Content = content,
                 };
                 request.Headers.Add("Authorization", _auth.ToString());
@@ -357,12 +406,19 @@ namespace image4ioDotNetSDK
             }
             catch (Image4ioException e)
             {
-                throw e;
+                return new MoveImageResponse
+                {
+                    Success = false,
+                    Errors = new List<string> { e.Message },
+                };
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                var ex = new Image4ioException("There is an error while moving image", e);
-                throw ex;
+                return new MoveImageResponse
+                {
+                    Success = false,
+                    Errors = new List<string> { "There is an error while moving image" },
+                };
             }
 
         }
@@ -384,7 +440,7 @@ namespace image4ioDotNetSDK
                 var request = new HttpRequestMessage()
                 {
                     Method = HttpMethod.Get,
-                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/folder" + queryBuilder.ToQueryString()),
+                    RequestUri = new Uri(BASE_ADDRESS + API_VERSION + "/folder" + queryBuilder.ToQueryString()),
                 };
                 request.Headers.Add("Authorization", _auth.ToString());
                 var result = await _client.SendAsync(request);
@@ -396,12 +452,19 @@ namespace image4ioDotNetSDK
             }
             catch (Image4ioException e)
             {
-                throw e;
+                return new ListFolderResponse
+                {
+                    Success = false,
+                    Errors = new List<string> { e.Message },
+                };
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                var ex = new Image4ioException("There is an error while listing folder", e);
-                throw ex;
+                return new ListFolderResponse
+                {
+                    Success = false,
+                    Errors = new List<string> { "There is an error while listing folder" },
+                };
             }
         }
 
@@ -412,7 +475,7 @@ namespace image4ioDotNetSDK
                 var request = new HttpRequestMessage()
                 {
                     Method = HttpMethod.Delete,
-                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/image"),
+                    RequestUri = new Uri(BASE_ADDRESS + API_VERSION + "/image"),
                     Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.Default, "application/json")
                 };
                 request.Headers.Add("Authorization", _auth.ToString());
@@ -425,12 +488,19 @@ namespace image4ioDotNetSDK
             }
             catch (Image4ioException e)
             {
-                throw e;
+                return new DeleteImageResponse
+                {
+                    Success = false,
+                    Errors = new List<string> { e.Message },
+                };
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                var ex = new Image4ioException("There is an error while deleting image", e);
-                throw ex;
+                return new DeleteImageResponse
+                {
+                    Success = false,
+                    Errors = new List<string> { "There is an error while deleting image" },
+                };
             }
         }
 
@@ -441,7 +511,7 @@ namespace image4ioDotNetSDK
                 var request = new HttpRequestMessage()
                 {
                     Method = HttpMethod.Delete,
-                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/stream"),
+                    RequestUri = new Uri(BASE_ADDRESS + API_VERSION + "/stream"),
                     Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.Default, "application/json")
                 };
 
@@ -454,12 +524,19 @@ namespace image4ioDotNetSDK
             }
             catch (Image4ioException e)
             {
-                throw e;
+                return new DeleteStreamResponse
+                {
+                    Success = false,
+                    Errors = new List<string> { e.Message },
+                };
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                var ex = new Image4ioException("There is an error while deleting a stream", e);
-                throw ex;
+                return new DeleteStreamResponse
+                {
+                    Success = false,
+                    Errors = new List<string> { "There is an error while deleting stream" },
+                };
             }
         }
 
@@ -470,7 +547,7 @@ namespace image4ioDotNetSDK
                 var request = new HttpRequestMessage()
                 {
                     Method = HttpMethod.Delete,
-                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/folder"),
+                    RequestUri = new Uri(BASE_ADDRESS + API_VERSION + "/folder"),
                     Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.Default, "application/json")
                 };
 
@@ -483,12 +560,19 @@ namespace image4ioDotNetSDK
             }
             catch (Image4ioException e)
             {
-                throw e;
+                return new DeleteFolderResponse
+                {
+                    Success = false,
+                    Errors = new List<string> { e.Message },
+                };
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                var ex = new Image4ioException("There is an error while deleting folder", e);
-                throw ex;
+                return new DeleteFolderResponse
+                {
+                    Success = false,
+                    Errors = new List<string> { "There is an error while deleting folder" },
+                };
             }
         }
 
@@ -499,7 +583,7 @@ namespace image4ioDotNetSDK
                 var request = new HttpRequestMessage()
                 {
                     Method = HttpMethod.Post,
-                    RequestUri = new Uri(BASE_ADDRESS + "/" + API_VERSION + "/fetchImage"),
+                    RequestUri = new Uri(BASE_ADDRESS + API_VERSION + "/fetchImage"),
                     Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.Default, "application/json")
                 };
 
@@ -512,12 +596,19 @@ namespace image4ioDotNetSDK
             }
             catch (Image4ioException e)
             {
-                throw e;
+                return new FetchImageResponse
+                {
+                    Success = false,
+                    Errors = new List<string> { e.Message },
+                };
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                var ex = new Image4ioException("There is an error while fetching image", e);
-                throw ex;
+                return new FetchImageResponse
+                {
+                    Success = false,
+                    Errors = new List<string> { "There is an error while fetching image" },
+                };
             }
         }
 
@@ -525,10 +616,14 @@ namespace image4ioDotNetSDK
         {
             try
             {
-                string json = JsonConvert.SerializeObject(model);
-                StringContent stringContent = new StringContent(json, Encoding.Default, "application/json");
+                var request = new HttpRequestMessage()
+                {
+                    Method = HttpMethod.Post,
+                    RequestUri = new Uri(BASE_ADDRESS + API_VERSION + "/fetchStream"),
+                    Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.Default, "application/json")
+                };
 
-                var result = await _client.PostAsync(API_VERSION + "/fetchStream", stringContent);
+                var result = await _client.SendAsync(request);
                 await CheckRequestError(result, "There is an error while fetching stream");
                 var jsonResponse = await result.Content.ReadAsStringAsync();
                 var response = JsonConvert.DeserializeObject<FetchStreamResponse>(jsonResponse);
@@ -537,41 +632,56 @@ namespace image4ioDotNetSDK
             }
             catch (Image4ioException e)
             {
-                throw e;
+                return new FetchStreamResponse
+                {
+                    Success = false,
+                    Errors = new List<string> { e.Message },
+                };
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                var ex = new Image4ioException("There is an error while fetching an stream", e);
-                throw ex;
+                return new FetchStreamResponse
+                {
+                    Success = false,
+                    Errors = new List<string> { "There is an error while fetching stream" },
+                };
             }
         }
         
-        public async Task<PurgeResponse> Purge()
+        public async Task<PurgeResponse> Purge(PurgeRequest model)
         {
             try
             {
-                var result = await _client.DeleteAsync(API_VERSION + "/purge");
-                if (result.StatusCode == HttpStatusCode.Unauthorized)
+                var request = new HttpRequestMessage()
                 {
-                    return new PurgeResponse
-                    {
-                        Success = false,
-                        Errors = new List<string> { "Unauthorized. Please check your API Key and API Secret." }
-                    };
-                }
-                var jsonResponse = await result.Content.ReadAsStringAsync();
-                var response = JsonConvert.DeserializeObject<PurgeResponse>(jsonResponse);
+                    Method = HttpMethod.Post,
+                    RequestUri = new Uri(BASE_ADDRESS + API_VERSION + "/purge?path="+model.Path),
+                    Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.Default, "application/json")
+                };
 
-                return response;
+                var result = await _client.SendAsync(request);
+                await CheckRequestError(result, "There is an error while creating purge request");
+
+                return new PurgeResponse
+                {
+                    Success=true
+                };
             }
             catch (Image4ioException e)
             {
-                throw e;
+                return new PurgeResponse
+                {
+                    Success = false,
+                    Errors = new List<string> { e.Message },
+                };
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                var ex = new Image4ioException("There is an error while purging the files from CDN", e);
-                throw ex;
+                return new PurgeResponse
+                {
+                    Success = false,
+                    Errors = new List<string> { "There is an error while creating purge request" },
+                };
             }
         }
 

@@ -8,66 +8,148 @@ namespace image4ioDotNetSDKTest
 {
     public class MockResponses
     {
-        /*
+
         public static SubscriptionResponse ReturnNormalSubscriptionResponse()
         {
-            return new SubscriptionResponse(){
-                Cloudname= "cloudname",
-                Status= "Active",
-                Subscription= "Startup",
-                SubscriptionRenewalPeriod= "Monthly",
-                SubscriptionStartDate= DateTime.UtcNow,
-                SubscriptionEndDate= DateTime.UtcNow,
-                Success= true,
-                Errors= new List<string>(),
-                Messages= new List<string>()
+            return new SubscriptionResponse()
+            {
+                Cloudname = "cloudname",
+                Status = "Active",
+                Subscription = "Startup",
+                SubscriptionRenewalPeriod = "Monthly",
+                SubscriptionStartDate = DateTime.UtcNow,
+                Success = true,
+                Errors = new List<string>(),
+                Messages = new List<string>(),
+                CDNUsage = new SubscriptionResponse.CDNUsageData
+                {
+                    LimitInGB = 10,
+                    UsageInGB = 1.23
+                },
+                CreditUsageIn30Days = new SubscriptionResponse.CreditUsage
+                {
+                    Limit = 15,
+                    Usage = 3.2
+                },
+                StorageUsage = new SubscriptionResponse.StorageUsageData
+                {
+                    AssetCount = 200,
+                    UsageInGB = 1.4,
+                    LimitInGB = 10
+                },
+                TransformationUsage = new SubscriptionResponse.TransformationData
+                {
+                    Count = 1250
+                }
             };
         }
 
+        public static ImageResponse ReturnImageResponse()
+        {
+            return new ImageResponse
+            {
+                Name = "/name-of-the-image.png",
+                Size = "388",
+                Format = "png",
+                Url = "https=//cdn.image4.io/cloudname/name-of-the-image.png",
+                ImagePath = "/cloudname/name-of-the-image.png",
+                Width = 72,
+                Height = 72,
+                LastModified = DateTime.Now
+            };
+        }
+
+        public static StreamResponse ReturnStreamResponse()
+        {
+            return new StreamResponse
+            {
+                Name = "/streamId",
+                Size = "4489511",
+                Format = "mp4",
+                Width = 1920,
+                Height = 1080,
+                DirectUrl = "",
+                ThumbnailUrl = "https=//watch.image4.io/cloudname/streamId/thumbnails/thumbnail.jpg",
+                PreviewUrl = "https=//watch.image4.io/cloudname/streamId",
+                HlsPlayback = "https=//cdn.image4.io/cloudname/streamId/manifest/video.m3u8",
+                Duration = 2.0,
+                ReadyToStream = true,
+                LastModified = DateTime.UtcNow
+            };
+        }
+
+        public static FolderResponse ReturnFolderResponse()
+        {
+            return new FolderResponse
+            {
+                Name = "test",
+                Path = "/test/",
+                Parent = "/"
+            };
+        }
+
+        public static object ReturnImageSignUrlResponse()
+        {
+            return new
+            {
+                Success = true,
+                Errors = new List<string>(),
+                Messages = new List<string>(),
+                Url = "https://mockresponse.com/image",
+                Path = ""
+            };
+        }
+        
         public static UploadImageResponse ReturnNormalUploadImageResponse()
         {
             return new UploadImageResponse()
             {
-                UploadedFiles = new List<UploadImageResponse.File>
-                {
-                   new UploadImageResponse.File
-                   {
-                        Name= "/name-of-the-image.png",
-                        UserGivenName= "name-of-the-image.png",
-                        Size= 388,
-                        Format= "png",
-                        Url= "https=//cdn.image4.io/cloudname/name-of-the-image.png",
-                        ImagePath= "/cloudname/name-of-the-image.png",
-                        Width= 72,
-                        Height= 72,
-                        CreatedAtUTC= DateTime.UtcNow,
-                        UpdatedAtUTC= DateTime.UtcNow,
-                        Status= "Uploaded"
-                    }
-                },
+                UploadedImage = ReturnImageResponse(),
                 Success = true,
                 Errors = new List<string>(),
                 Messages = new List<string>()
             };
         }
 
-        public static ImageResponse ReturnGetImageResponse()
+        public static object ReturnStreamSignUrlResponse()
         {
-            return new ImageResponse()
+            return new
             {
-                Image = new ImageResponse.ImageFile
-                {
-                    Name = "/name-of-the-image.png",
-                    UserGivenName = "name-of-the-image.png",
-                    Size = 388,
-                    Format = "png",
-                    Url = "https=//cdn.image4.io/cloudname/name-of-the-image.png",
-                    ImagePath = "/cloudname/name-of-the-image.png",
-                    Width = 72,
-                    Height = 72,
-                    CreatedAtUTC = DateTime.UtcNow,
-                    UpdatedAtUTC = DateTime.UtcNow
-                },
+                Success = true,
+                Errors = new List<string>(),
+                Messages = new List<string>(),
+                Url = "https://mockresponse.com/stream",
+                Path = ""
+            };
+        }
+
+        public static UploadStreamResponse ReturnNormalUploadStreamResponse()
+        {
+            return new UploadStreamResponse()
+            {
+                UploadedStream = ReturnStreamResponse(),
+                Success = true,
+                Errors = new List<string>(),
+                Messages = new List<string>()
+            };
+        }
+
+        public static GetImageResponse ReturnGetImageResponse()
+        {
+            return new GetImageResponse()
+            {
+                Image = ReturnImageResponse(),
+                Success = true,
+                Errors = new List<string>(),
+                Messages = new List<string>()
+            };
+        }
+
+        public static GetStreamResponse ReturnGetStreamResponse()
+        {
+            return new GetStreamResponse()
+            {
+                Stream = ReturnStreamResponse(),
                 Success = true,
                 Errors = new List<string>(),
                 Messages = new List<string>()
@@ -78,12 +160,7 @@ namespace image4ioDotNetSDKTest
         {
             return new CreateFolderResponse()
             {
-                CreatedFolder = new CreateFolderResponse.Folder
-                {
-                    Name = "test",
-                    Path = "/test/",
-                    Status = "Created"
-                },
+                Folder = ReturnFolderResponse(),
                 Success = true,
                 Errors = new List<string>(),
                 Messages = new List<string>()
@@ -94,20 +171,7 @@ namespace image4ioDotNetSDKTest
         {
             return new CopyImageResponse()
             {
-                CopiedImage = new CopyImageResponse.File
-                {
-                    Name = "/name-of-the-image.png",
-                    UserGivenName = "name-of-the-image.png",
-                    Size = 388,
-                    Format = "png",
-                    Url = "https=//cdn.image4.io/cloudname/name-of-the-image.png",
-                    ImagePath = "/cloudname/name-of-the-image.png",
-                    Width = 72,
-                    Height = 72,
-                    CreatedAtUTC = DateTime.UtcNow,
-                    UpdatedAtUTC = DateTime.UtcNow,
-                    Status = "Copied"
-                },
+                Image= ReturnImageResponse(),
                 Success = true,
                 Errors = new List<string>(),
                 Messages = new List<string>()
@@ -118,20 +182,7 @@ namespace image4ioDotNetSDKTest
         {
             return new MoveImageResponse()
             {
-                MovedImage = new MoveImageResponse.File
-                {
-                    Name = "/name-of-the-image.png",
-                    UserGivenName = "name-of-the-image.png",
-                    Size = 388,
-                    Format = "png",
-                    Url = "https=//cdn.image4.io/cloudname/name-of-the-image.png",
-                    ImagePath = "/cloudname/name-of-the-image.png",
-                    Width = 72,
-                    Height = 72,
-                    CreatedAtUTC = DateTime.UtcNow,
-                    UpdatedAtUTC = DateTime.UtcNow,
-                    Status = "Moved"
-                },
+                Image= ReturnImageResponse(),
                 Success = true,
                 Errors = new List<string>(),
                 Messages = new List<string>()
@@ -142,50 +193,37 @@ namespace image4ioDotNetSDKTest
         {
             return new ListFolderResponse()
             {
-                Folders = new List<ListFolderResponse.Folder>
+                Folders = new List<FolderResponse>
                 {
-                    new ListFolderResponse.Folder()
-                    {
-                        Name = "folderName",
-                        Path = "/folderName/",
-                        Parent = "/"
-                    }
+                    ReturnFolderResponse()
                 },
-                Images = new List<ListFolderResponse.Image>()
+                Files=new List<FileResponse>
                 {
-                    new ListFolderResponse.Image()
+                    new FileResponse
                     {
-                        Folder = "/",
-                        OrginalName = "name-of-the-file.jpg",
-                        Name = "/name-of-the-file.jpg",
-                        Size = 397612,
-                        Format = "jpg",
-                        Width = 1180,
-                        Height = 874,
-                        CreatedAtUTC = DateTime.UtcNow,
-                        UpdatedAtUTC = DateTime.UtcNow,
-                        ImagePath = "/cloudname/name-of-the-file.jpg",
-                        Url = "https=//cdn.image4.io/cloudname/name-of-the-file.jpg"
-                    }
-                },
-                Streams = new List<ListFolderResponse.Stream>()
-                {
-                    new ListFolderResponse.Stream()
+                        Name = "/name-of-the-image.png",
+                        Size = "388",
+                        Format = "png",
+                        Url = "https=//cdn.image4.io/cloudname/name-of-the-image.png",
+                        ImagePath = "/cloudname/name-of-the-image.png",
+                        Width = 72,
+                        Height = 72,
+                        LastModified = DateTime.Now
+                    },
+                    new FileResponse
                     {
-                        Folder= "/",
-                        OrginalName= "name-of-the-file.mp4",
-                        Name= "/streamId",
-                        Size= 4489511,
-                        Format= "mp4",
-                        Width= 1920,
-                        Height= 1080,
-                        CreatedAtUTC= DateTime.UtcNow,
-                        UpdatedAtUTC= DateTime.UtcNow,
-                        ThumbnailUrl= "https=//watch.image4.io/cloudname/streamId/thumbnails/thumbnail.jpg",
-                        PreviewUrl= "https=//watch.image4.io/cloudname/streamId",
-                        HlsPlayback= "https=//cdn.image4.io/cloudname/streamId/manifest/video.m3u8",
-                        Duration= 2.0,
-                        ReadyToStream= true
+                        Name = "/streamId",
+                        Size = "4489511",
+                        Format = "mp4",
+                        Width = 1920,
+                        Height = 1080,
+                        DirectUrl = "",
+                        ThumbnailUrl = "https=//watch.image4.io/cloudname/streamId/thumbnails/thumbnail.jpg",
+                        PreviewUrl = "https=//watch.image4.io/cloudname/streamId",
+                        HlsPlayback = "https=//cdn.image4.io/cloudname/streamId/manifest/video.m3u8",
+                        Duration = 2.0,
+                        ReadyToStream = true,
+                        LastModified = DateTime.UtcNow
                     }
                 },
                 ContinuationToken = "token_string",
@@ -199,12 +237,10 @@ namespace image4ioDotNetSDKTest
         {
             return new DeleteImageResponse()
             {
-                DeletedImage = new DeleteImageResponse.File
+                DeletedImage=new DeleteImageResponse.DeleteImage
                 {
-                    ImagePath = "/cloudname/name-of-the-file.jpg",
-                    Url = "https=//cdn.image4.io/cloudname/name-of-the-file.jpg",
-                    Name = "/name-of-the-file.jpg",
-                    Status = "Deleted",
+                    Source="/test.png",
+                    Url= "https=//cdn.image4.io/cloudname/test.png"
                 },
                 Success = true,
                 Errors = new List<string>(),
@@ -216,99 +252,24 @@ namespace image4ioDotNetSDKTest
         {
             return new DeleteFolderResponse()
             {
-                DeletedFolder = new DeleteFolderResponse.Folder()
+                DeletedFolder=new DeleteFolderResponse.Folder
                 {
-                    Name = "/folderName",
-                    Status = "Deleted",
+                    Path="/test/"
                 },
                 Success = true,
                 Errors = new List<string>(),
                 Messages = new List<string>()
             };
         }
+        
         public static FetchImageResponse ReturnFetchImageResponse()
         {
             return new FetchImageResponse()
             {
-                FetchedImage = new FetchImageResponse.File
-                {
-                    Name = "/name-of-the-image.png",
-                    UserGivenName = "name-of-the-image.png",
-                    Size = 388,
-                    Format = "png",
-                    Url = "https=//cdn.image4.io/cloudname/name-of-the-image.png",
-                    ImagePath = "/cloudname/name-of-the-image.png",
-                    Width = 72,
-                    Height = 72,
-                    CreatedAtUTC = DateTime.UtcNow,
-                    UpdatedAtUTC = DateTime.UtcNow,
-                    Status = "Fetched"
-                },
+                FetchedImage=ReturnImageResponse(),
                 Success = true,
                 Errors = new List<string>(),
                 Messages = new List<string>()
-            };
-        }
-
-        public static StartUploadStreamResponse ReturnStartUploadStreamResponse()
-        {
-            return new StartUploadStreamResponse()
-            {
-                FileName = "/folderPath/name.mp4",
-                Path = "/folderPath",
-                Token = "Upload_token",
-                Success = true,
-                Errors = new List<string>(),
-                Messages = new List<string>()
-            };
-        }
-
-        public static UploadStreamResponse ReturnFinalizeStreamResponse()
-        {
-            return new UploadStreamResponse
-            {
-                UploadedStream = new UploadStreamResponse.File
-                {
-                    UserGivenName = "name-of-the-stream.mp4",
-                    Name = "/4afdcb21ef149f06309573734e6d9515",
-                    Format = "mp4",
-                    Width = 1280,
-                    Height = 720,
-                    CreatedAtUTC = DateTime.UtcNow,
-                    UpdatedAtUTC = DateTime.UtcNow,
-                    ThumbnailUrl = "https=//watch.image4.io/cloudname/4afdcb21ef149f06309573734e6d9515/thumbnails/thumbnail.jpg",
-                    PreviewUrl = "https=//watch.image4.io/cloudname/4afdcb21ef149f06309573734e6d9515",
-                    HlsPlayback = "https=//cdn.image4.io/cloudname/4afdcb21ef149f06309573734e6d9515/manifest/video.m3u8",
-                    Duration = 10.0,
-                    ReadyToStream = false
-                },
-                Success = true,
-                Errors = new List<string>(),
-                Messages = new List<string>()
-            };
-        }
-
-        public static StreamResponse ReturnGetStreamResponse()
-        {
-            return new StreamResponse
-            {
-                Stream = new StreamResponse.StreamFile
-                {
-                    OrginalName = "name-of-the-stream.mp4",
-                    Name = "/4afdcb21ef149f06309573734e6d9515",
-                    Format = "mp4",
-                    Width = 1280,
-                    Height = 720,
-                    CreatedAtUTC = DateTime.UtcNow,
-                    UpdatedAtUTC = DateTime.UtcNow,
-                    ThumbnailUrl = "https=//watch.image4.io/cloudname/4afdcb21ef149f06309573734e6d9515/thumbnails/thumbnail.jpg",
-                    PreviewUrl = "https=//watch.image4.io/cloudname/4afdcb21ef149f06309573734e6d9515",
-                    HlsPlayback = "https=//cdn.image4.io/cloudname/4afdcb21ef149f06309573734e6d9515/manifest/video.m3u8",
-                    Duration = 10.0,
-                    ReadyToStream = false,
-                    Folder = "/",
-                    Size = 123456
-                }
             };
         }
 
@@ -316,11 +277,14 @@ namespace image4ioDotNetSDKTest
         {
             return new DeleteStreamResponse
             {
-                DeletedStream = new DeleteStreamResponse.File
+                DeleteStream=new DeleteStreamResponse.DeletedStream
                 {
-                    Name = "/4afdcb21ef149f06309573734e6d9515",
-                    Status = "Deleted"
-                }
+                    Source = "/test.mp4",
+                    Url = "https=//cdn.image4.io/cloudname/test.mp4"
+                },
+                Success = true,
+                Errors = new List<string>(),
+                Messages = new List<string>()
             };
         }
 
@@ -328,22 +292,11 @@ namespace image4ioDotNetSDKTest
         {
             return new FetchStreamResponse
             {
-                FetchedStream = new FetchStreamResponse.File
-                {
-                    UserGivenName = "name-of-the-stream.mp4",
-                    Name = "/4afdcb21ef149f06309573734e6d9515",
-                    Format = "mp4",
-                    Width = 1280,
-                    Height = 720,
-                    CreatedAtUTC = DateTime.UtcNow,
-                    UpdatedAtUTC = DateTime.UtcNow,
-                    ThumbnailUrl = "https=//watch.image4.io/cloudname/4afdcb21ef149f06309573734e6d9515/thumbnails/thumbnail.jpg",
-                    PreviewUrl = "https=//watch.image4.io/cloudname/4afdcb21ef149f06309573734e6d9515",
-                    HlsPlayback = "https=//cdn.image4.io/cloudname/4afdcb21ef149f06309573734e6d9515/manifest/video.m3u8",
-                    Duration = 10.0,
-                    ReadyToStream = false,
-                }
+                FetchedStream= ReturnStreamResponse(),
+                Success = true,
+                Errors = new List<string>(),
+                Messages = new List<string>()
             };
-        }*/
+        }
     }
 }
